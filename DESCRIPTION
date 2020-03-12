@@ -1,0 +1,14 @@
+Package: pointr
+Title: Enables downloading of data from sharepoint
+Version: 0.0.1
+Authors@R: 
+    person(given = "Robert",
+           family = "Ashton",
+           role = c("aut", "cre"),
+           email = "r.ashton@imperial.ac.uk)
+Description: Enables downloading of data from sharepoint
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat
