@@ -1,5 +1,6 @@
-pointr_download <- function(root_url, data_path, username, password, path) {
+pointr_download <- function(root_url, data_path, username, path) {
   ## Get security token
+  password <- getPass::getPass()
   token <- get_security_token(root_url, username, password)
 
   ## Get access cookies
@@ -34,4 +35,5 @@ download_data <- function(url, cookies, path) {
   ## TODO: Separate path here and send the data to get as a parameter
   ## this will handle any encoding needed
   httr::GET(url, httr::set_cookies(cookies), httr::write_disk(path))
+  ## Error handling!
 }

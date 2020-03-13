@@ -16,4 +16,5 @@ Suggests:
 Imports: 
     httr,
     glue,
-    xml2
+    xml2,
+    getPass
