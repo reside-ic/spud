@@ -56,7 +56,7 @@ test_that("download_data stores data to disk", {
     SPWorkLoadAttribution = "example_SPWorkLoadAttribution")
   with_mock("httr::GET" = mock_get, {
     response <- download_data(
-      "https://example.com/sites/example/data/shape files/ex.zip", cookies, t)
+      "https://example.com/sites/example/data/shape%20files/ex.zip", cookies, t)
   })
 
   mockery::expect_called(mock_get, 1)
