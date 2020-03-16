@@ -1,6 +1,5 @@
 pointr_download <- function(root_url, data_path, username, path) {
   ## Get security token
-  password <- get_password()
   token <- get_security_token(root_url, username, password)
 
   ## Get access cookies
@@ -8,20 +7,6 @@ pointr_download <- function(root_url, data_path, username, path) {
 
   ## Get data
   download_data(paste(root_url, data_path, sep = "/"), access_cookies, path)
-}
-
-get_security_token <- function(root_url, username, password) {
-  payload <- paste(readLines(system.file("security_token_request.xml",
-                                   package = "pointr")),
-                   collapse = "\n")
-  payload <- glue::glue(payload, root_url = root_url, username = username,
-                        password = password)
-  response <- httr::POST("https://login.microsoftonline.com/extSTS.srf",
-                    body = payload)
-  xml <- httr::content(response, "text", "text/xml", encoding = "UTF-8")
-  parsed_xml <- xml2::read_xml(xml)
-  token_node <- xml2::xml_find_first(parsed_xml, "//wsse:BinarySecurityToken")
-  token <- xml2::xml_text(token_node)
 }
 
 get_access_cookies <- function(root_url, security_token) {
@@ -50,14 +35,4 @@ download_data <- function(url, cookies, path) {
   x
   ## Error handling!
   ## Will return with status 403
-}
-
-get_password <- function() {
-  password <- getPass::getPass()
-  if (is.na(password) || !nzchar(password)) {
-    password <- Sys.getenv("SHAREPOINT_PASS")
-  }
-  if (is.na(password) || !nzchar(password)) {
-    stop("Failed to retrieve password, either set SHAREPOINT_PASS env var or enter password")
-  }
 }
