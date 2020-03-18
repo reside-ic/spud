@@ -1,6 +1,6 @@
-pointr_download <- function(sharepoint_url, sharepoint_path, save_path) {
+sharepoint_download <- function(sharepoint_url, sharepoint_path, save_path) {
   pointr <- pointr$new(sharepoint_url)
-  pointr$download_data(sharepoint_path, save_path)
+  pointr$download(sharepoint_path, save_path)
 }
 
 pointr <- R6::R6Class(
