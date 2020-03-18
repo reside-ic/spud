@@ -3,39 +3,55 @@ sharepoint_client <- R6::R6Class(
   cloneable = FALSE,
 
   public = list(
+    sharepoint_url = NULL,
+
     initialize = function(sharepoint_url) {
-      ## Do the exchange to get cookies for hintr -
+      self$sharepoint_url <- sharepoint_url
+      private$handle <- httr::handle(sharepoint_url)
 
-      ## TBD: Managing handler - we could enable a client to have a handle
-      ## associated with it and manage here. This can be cleared for each test
-      ## giving us fresh auth stuff
-
+      creds <- get_credentials()
+      message("Authenticating user")
+      response <- httr::POST(
+        "https://login.microsoftonline.com/extSTS.srf",
+        body = prepare_security_token_payload(self$sharepoint_url, creds))
+      ## Note that httr preserves cookies and settings over multiple requests
+      ## via the handle. Means that if we auth once and retrieve cookies httr
+      ## will automatically send these on subsequent requests if usnig the same
+      ## handle object
+      security_token <- parse_security_token_response(response)
+      message("Retrieving cookies")
+      self$POST("_forms/default.aspx?wa=wsignin1.0", body = security_token)
     },
 
     GET = function(...) {
-      ## GET
+      self$request(httr::GET, ...)
     },
 
     POST = function(...) {
-      ## POST to some URL
+      self$request(httr::POST, ...)
     },
 
     request = function(verb, path, ...) {
-      ## Handle a generic request via GET or POST
+      url <- paste(self$sharepoint_url, path, sep = "/")
+      verb(url, ..., handle = private$handle)
     }
   ),
 
+  private = list(
+    handle = NULL
+  )
 )
 
-get_security_token <- function(root_url) {
+prepare_security_token_payload <- function(url, credentials) {
   payload <- paste(readLines(system.file("security_token_request.xml",
                                          package = "pointr")),
                    collapse = "\n")
-  creds <- get_credentials()
-  payload <- glue::glue(payload, root_url = root_url, username = creds$username,
-                        password = creds$password)
-  response <- httr::POST("https://login.microsoftonline.com/extSTS.srf",
-                         body = payload)
+  glue::glue(payload, root_url = url,
+             username = credentials$username,
+             password = credentials$password)
+}
+
+parse_security_token_response <- function(response) {
   xml <- httr::content(response, "text", "text/xml", encoding = "UTF-8")
   parsed_xml <- xml2::read_xml(xml)
   token_node <- xml2::xml_find_first(parsed_xml, "//wsse:BinarySecurityToken")
