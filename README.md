@@ -7,3 +7,21 @@ Authenticates using pattern detailed https://paulryan.com.au/2014/spo-remote-aut
 There is a package exists on github for managing lists - not clear whether this will work with downloading any data as package doesn't work with most basic example of retrieveing all available lists
 https://github.com/LukasK13/sharepointr#list-all-available-lists
 
+## Testing
+
+Note there is no end-to-end test in this package that we can authenticate with a real sharepoint server and download data. Can run this manually to download a dataset which should be available to everyone with an Imperial login.
+
+```
+sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents/Document.docx", tempfile(fileext = ".docx"))
+```
+
+### TODO
+
+* Allow more formats of the resource URL - at the moment users need to do some manual formatting to put this into the correct formatting hopefully we can support
+   * Copy from url when previewing document
+   * The "copy link" button for a resource
+   * Manually building path from sites and the document list
+* Error handling - do we want to do some better error handling here if any of the requests fail? e.g. particularly bad if downloading a resource which doesn't exist
+* Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks
+* Vignette - write one!
+* Use an alternative to getPass for a username entry - there is no reason for this dialog to be masked
