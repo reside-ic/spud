@@ -1,3 +1,9 @@
+<!-- badges: start -->
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Travis build status](https://travis-ci.org/reside-ic/pointr.svg?branch=master)](https://travis-ci.org/reside-ic/pointr)
+[![codecov.io](https://codecov.io/github/reside-ic/pointr/coverage.svg?branch=master)](https://codecov.io/github/reside-ic/pointr?branch=master)
+<!-- badges: end -->
+
 # pointr
 
 Package to enable programmatic downloading of data from sharepoint.
