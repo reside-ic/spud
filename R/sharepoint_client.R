@@ -1,3 +1,6 @@
+#' Create sharepoint client, to manage HTTP requests to sharepoint.
+#'
+#' @keywords internal
 sharepoint_client <- R6::R6Class(
   "sharepoint_client",
   cloneable = FALSE,
@@ -5,6 +8,15 @@ sharepoint_client <- R6::R6Class(
   public = list(
     sharepoint_url = NULL,
 
+    #' @description
+    #' Create client object for sending http requests to sharepoint.
+    #'
+    #' This manages authenticating with sharepoint via sending credentails to
+    #' microsoft to retrieve an access token which it then sends to sharepoint
+    #' to retrieve cookies used for subsequent authentication.
+    #'
+    #' @param sharepoint_url Root URL of sharepoint site to download from
+    #' @return A new `sharepoint_client` object
     initialize = function(sharepoint_url) {
       self$sharepoint_url <- sharepoint_url
       private$handle <- httr::handle(sharepoint_url)
@@ -32,14 +44,34 @@ sharepoint_client <- R6::R6Class(
       validate_cookies(res)
     },
 
+    #' @description
+    #' Send GET request to sharepoint
+    #'
+    #' @param ... Args passed on to httr
+    #'
+    #' @return HTTP response
     GET = function(...) {
       self$request(httr::GET, ...)
     },
 
+    #' @description
+    #' Send POST request to sharepoint
+    #'
+    #' @param ... Args passed on to httr
+    #'
+    #' @return HTTP response
     POST = function(...) {
       self$request(httr::POST, ...)
     },
 
+    #' @description
+    #' Send POST request to sharepoint
+    #'
+    #' @param verb A httr function for type of request to send e.g. httr::GET
+    #' @param path Request path
+    #' @param ... Additional args passed on to httr
+    #'
+    #' @return HTTP response
     request = function(verb, path, ...) {
       url <- paste(self$sharepoint_url, path, sep = "/")
       verb(url, ..., handle = private$handle)
@@ -51,6 +83,13 @@ sharepoint_client <- R6::R6Class(
   )
 )
 
+#' Prepare payload for retrieving security token
+#'
+#' @param url URL for site you are requesting a token for
+#' @param credentials Username and password for site request token
+#'
+#' @return Formatted xml body for security token request
+#' @keywords internal
 prepare_security_token_payload <- function(url, credentials) {
   payload <- paste(readLines(system.file("security_token_request.xml",
                                          package = "pointr")),
@@ -60,6 +99,15 @@ prepare_security_token_payload <- function(url, credentials) {
              password = credentials$password)
 }
 
+#' Parse response from security token request
+#'
+#' This takes the full response and pulls out the part of the xml containing
+#' the security token.
+#'
+#' @param response httr response object
+#'
+#' @return The security token or NA if failed to retrieve
+#' @keywords internal
 parse_security_token_response <- function(response) {
   xml <- httr::content(response, "text", "text/xml", encoding = "UTF-8")
   parsed_xml <- xml2::read_xml(xml)
