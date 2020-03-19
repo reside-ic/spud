@@ -92,6 +92,6 @@ test_that("can validate cookies",  {
   test_cookies <- httr::GET("https://httpbin.org/cookies/set/test/123")
   test_cookies <- httr::GET("https://httpbin.org/cookies/set/test2/example")
   expect_error(validate_cookies(test_cookies),
-    "Failed to retrieve all required cookies from URL 'https://httpbin.org/cookies'.
+  "Failed to retrieve all required cookies from URL 'https://httpbin.org/cookies'.
 Must provide rtFa and FedAuth cookies, got test, test2", fixed = TRUE)
 })
