@@ -45,7 +45,8 @@ pointr <- R6::R6Class(
     #' @param save_path Path to save downloaded data to
     #' @return Path to saved data
     download = function(sharepoint_path, save_path) {
-      res <- private$client$GET(sharepoint_path, httr::write_disk(save_path))
+      res <- private$client$GET(URLencode(sharepoint_path),
+                                httr::write_disk(save_path))
       save_path
     }
   ),
