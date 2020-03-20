@@ -12,13 +12,13 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    testthat,
     mockery,
+    testthat,
     withr
 Imports: 
-    httr,
+    getPass,
     glue,
-    xml2,
-    getPass
+    httr,
+    xml2
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
