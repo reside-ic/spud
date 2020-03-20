@@ -41,3 +41,7 @@ assert_nonmissing <- function(x, name = deparse(substitute(x))) {
     stop(sprintf("'%s' must not be NA", name), call. = FALSE)
   }
 }
+
+pointr_file <- function(...) {
+  system.file(..., package = "pointr", mustWork = TRUE)
+}

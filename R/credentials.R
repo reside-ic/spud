@@ -5,6 +5,7 @@
 #'
 #' @return The username and password entered
 #' @keywords internal
+#' @noRd
 get_credentials <- function() {
   list(
     username = get_single_credential("SHAREPOINT_USERNAME",

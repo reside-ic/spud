@@ -1,6 +1,7 @@
 #' Create sharepoint client, to manage HTTP requests to sharepoint.
 #'
 #' @keywords internal
+#' @noRd
 sharepoint_client <- R6::R6Class(
   "sharepoint_client",
   cloneable = FALSE,
@@ -90,9 +91,9 @@ sharepoint_client <- R6::R6Class(
 #'
 #' @return Formatted xml body for security token request
 #' @keywords internal
+#' @noRd
 prepare_security_token_payload <- function(url, credentials) {
-  payload <- paste(readLines(system.file("security_token_request.xml",
-                                         package = "pointr")),
+  payload <- paste(readLines(pointr_file("security_token_request.xml")),
                    collapse = "\n")
   glue::glue(payload, root_url = url,
              username = credentials$username,
@@ -108,6 +109,7 @@ prepare_security_token_payload <- function(url, credentials) {
 #'
 #' @return The security token or NA if failed to retrieve
 #' @keywords internal
+#' @noRd
 parse_security_token_response <- function(response) {
   xml <- httr::content(response, "text", "text/xml", encoding = "UTF-8")
   parsed_xml <- xml2::read_xml(xml)
@@ -124,6 +126,7 @@ parse_security_token_response <- function(response) {
 #'
 #' @return Invisible TRUE if valid, error otherwise
 #' @keywords internal
+#' @noRd
 validate_cookies <- function(response) {
   cookies <- httr::cookies(response)
   if (!(all(c("rtFa", "FedAuth") %in% cookies$name))) {
