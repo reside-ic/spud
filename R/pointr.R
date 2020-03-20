@@ -48,12 +48,12 @@ pointr <- R6::R6Class(
     #' @return Path to saved data
     download = function(sharepoint_path, save_path, verbose = FALSE) {
       if (verbose) {
-        options <- httr::verbose()
+        opts <- httr::verbose()
       } else {
-        options <- c()
+        opts <- NULL
       }
       res <- private$client$GET(URLencode(sharepoint_path),
-                                options,
+                                opts,
                                 httr::write_disk(save_path))
       save_path
     }
