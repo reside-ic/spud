@@ -43,3 +43,28 @@ test_that("download encodes URL", {
   expect_equal(mockery::mock_args(mock_get)[[1]][[1]],
                "https://httpbin.org/anything/any%20thing")
 })
+
+test_that("httr download can print verbose output", {
+  ## Mock out authentication steps
+  security_token_res <- readRDS("mocks/security_token_response.rds")
+  cookies_res <- readRDS("mocks/cookies_response.rds")
+  mock_post <- mockery::mock(security_token_res, cookies_res)
+
+  mock_get <- mockery::mock("response")
+
+  t <- tempfile()
+  withr::with_envvar(
+    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
+    with_mock("httr::POST" = mock_post,
+              "httr::GET" = mock_get, {
+                download <- sharepoint_download("https://httpbin.org",
+                                                "anything/any thing", t, TRUE)
+              })
+  )
+
+  mockery::expect_called(mock_get, 1)
+  expect_equal(mockery::mock_args(mock_get)[[1]][[1]],
+               "https://httpbin.org/anything/any%20thing")
+  expect_equal(mockery::mock_args(mock_get)[[1]][[2]],
+               httr::verbose())
+})

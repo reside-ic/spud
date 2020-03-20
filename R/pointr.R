@@ -13,13 +13,14 @@
 #' hover -> Copy link and manually edit to get the file path. See vignette for
 #' more details.
 #' @param save_path Path to location you want to save the data
+#' @param verbose If TRUE then HTTP requests will print verbose output
 #'
 #' @return Path to downloaded data
 #' @export
 sharepoint_download <- function(sharepoint_url, sharepoint_path,
-                                save_path = tempfile()) {
+                                save_path = tempfile(), verbose = FALSE) {
   pointr <- pointr$new(sharepoint_url)
-  pointr$download(sharepoint_path, save_path)
+  pointr$download(sharepoint_path, save_path, verbose)
 }
 
 #' Create sharepoint connection for downloading data.
@@ -43,9 +44,16 @@ pointr <- R6::R6Class(
     #' Download data from sharepoint
     #' @param sharepoint_path Path to the resource within sharepoint
     #' @param save_path Path to save downloaded data to
+    #' @param verbose If TRUE then HTTP requests will print verbose output
     #' @return Path to saved data
-    download = function(sharepoint_path, save_path) {
+    download = function(sharepoint_path, save_path, verbose = FALSE) {
+      if (verbose) {
+        options <- httr::verbose()
+      } else {
+        options <- c()
+      }
       res <- private$client$GET(URLencode(sharepoint_path),
+                                options,
                                 httr::write_disk(save_path))
       save_path
     }
