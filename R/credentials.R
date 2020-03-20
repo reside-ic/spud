@@ -8,21 +8,27 @@
 get_credentials <- function() {
   list(
     username = get_single_credential("SHAREPOINT_USERNAME",
-                                     "Sharepoint username"),
-    password = get_single_credential("SHAREPOINT_PASS", "Sharepoint password")
+                                     "Sharepoint username",
+                                     read_line),
+    password = get_single_credential("SHAREPOINT_PASS", "Sharepoint password",
+                                     get_pass)
   )
 }
 
-get_single_credential <- function(env_var, credential) {
+get_single_credential <- function(env_var, credential, read_func) {
   cred <- Sys.getenv(env_var)
   if (is_empty(cred) && is_interactive()) {
-    cred <- getPass::getPass(msg = credential)
+    cred <- read_func(paste0(credential, ": "))
   }
-  if (is_empty(cred)) {
-    stop(sprintf(
-      "Failed to retrieve %s, either set env var %s or enter in interactive session",
-      credential, env_var))
-  }
+  tryCatch(
+    assert_scalar_character(cred, credential),
+    error = function(e) {
+      e$message <- paste0(
+        e$message,
+        sprintf(", either set env var %s or enter in interactive session",
+                env_var))
+      stop(e)
+    })
   cred
 }
 
