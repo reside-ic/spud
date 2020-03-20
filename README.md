@@ -30,4 +30,4 @@ sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents
 * Error handling - do we want to do some better error handling here if any of the requests fail? e.g. particularly bad if downloading a resource which doesn't exist
 * Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks
 * Vignette - write one!
-* Use an alternative to getPass for a username entry - there is no reason for this dialog to be masked
+* Upload to sharepoint
