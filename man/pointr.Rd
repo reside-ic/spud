@@ -39,7 +39,7 @@ A new \code{pointr} object
 \subsection{Method \code{download()}}{
 Download data from sharepoint
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{pointr$download(sharepoint_path, save_path)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{pointr$download(sharepoint_path, save_path, verbose = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -48,6 +48,8 @@ Download data from sharepoint
 \item{\code{sharepoint_path}}{Path to the resource within sharepoint}
 
 \item{\code{save_path}}{Path to save downloaded data to}
+
+\item{\code{verbose}}{If TRUE then HTTP requests will print verbose output}
 }
 \if{html}{\out{</div>}}
 }

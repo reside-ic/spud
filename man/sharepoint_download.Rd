@@ -4,7 +4,12 @@
 \alias{sharepoint_download}
 \title{Download a dataset from sharepoint}
 \usage{
-sharepoint_download(sharepoint_url, sharepoint_path, save_path = tempfile())
+sharepoint_download(
+  sharepoint_url,
+  sharepoint_path,
+  save_path = tempfile(),
+  verbose = FALSE
+)
 }
 \arguments{
 \item{sharepoint_url}{The base URL of sharepoint e.g.
@@ -22,6 +27,8 @@ hover -> Copy link and manually edit to get the file path. See vignette for
 more details.}
 
 \item{save_path}{Path to location you want to save the data}
+
+\item{verbose}{If TRUE then HTTP requests will print verbose output}
 }
 \value{
 Path to downloaded data
