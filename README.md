@@ -23,6 +23,7 @@ sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents
 
 ### TODO
 
+* Caching for `sharepoint_download` function. Probably a kv store of sharepoint URL + user to `pointr` or `sharepoint_client` object
 * Allow more formats of the resource URL - at the moment users need to do some manual formatting to put this into the correct formatting hopefully we can support
    * Copy from url when previewing document
    * The "copy link" button for a resource
