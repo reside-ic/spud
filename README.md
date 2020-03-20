@@ -15,7 +15,7 @@ https://github.com/LukasK13/sharepointr#list-all-available-lists
 
 ## Testing
 
-Note there is no end-to-end test in this package that we can authenticate with a real sharepoint server and download data. Can run this manually to download a dataset which should be available to everyone with an Imperial login. Note that when prompted for a username it is name as you use it to login to imperial account e.g. `jbloggs@ic.ac.uk` opposed to your email `j.boggs@imperial.ac.uk`
+Note there is no end-to-end test in this package that we can authenticate with a real sharepoint server and download data. Can run this manually to download a dataset which should be available to everyone with an Imperial login. Note that when prompted for a username it is name as you use it to login to imperial account e.g. `jbloggs@ic.ac.uk` opposed to your email `j.bloggs@imperial.ac.uk`
 
 ```
 sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents/Document.docx", tempfile(fileext = ".docx"))
