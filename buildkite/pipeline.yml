@@ -1,0 +1,13 @@
+steps:
+  - label: "Build"
+    command: docker/build
+
+  - wait
+
+  - label: "Test"
+    command: docker/test
+
+  -wait
+
+  - label: "Publish"
+    command: docker/push
