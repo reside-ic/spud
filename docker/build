@@ -12,4 +12,5 @@ docker build --pull \
 
 # We always push the SHA tagged versions, for debugging if the tests
 # after this step fail
-docker push $TAG_SHA
+## TODO: uncomment push once working with testing too
+#docker push $TAG_SHA
