@@ -3,7 +3,7 @@ PACKAGE_ROOT=$(realpath $HERE/..)
 PACKAGE_NAME=pointr
 PACKAGE_ORG=reside
 
-GIT_SHA=$(git -C "$PACKAGE_ROOT" rev-parse --short=7 HEAD)
+GIT_SHA=$(git -C "$PACKAGE_ROOT" log --pretty=format:'%h' -n 1)
 PKG_VERSION=$(cat $PACKAGE_ROOT/DESCRIPTION | grep '^Version:' | sed 's/^.*: *//')
 
 if [ "$TRAVIS" = "true" ]; then
