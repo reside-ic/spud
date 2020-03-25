@@ -1,6 +1,7 @@
 FROM rocker/r-ver:3.6.0
 
-RUN apt-get update
+RUN apt-get update && apt-get -y install \
+    libssl-dev
 
 COPY docker/bin /usr/local/bin/
 RUN sed  -i'' '/mran.microsoft.com/d' /usr/local/lib/R/etc/Rprofile.site
