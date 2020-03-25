@@ -1,4 +1,4 @@
-## -*-sh-*-
+#!/usr/bin/env bash
 PACKAGE_ROOT=$(realpath $HERE/..)
 PACKAGE_NAME=pointr
 PACKAGE_ORG=reside
@@ -22,3 +22,12 @@ TAG_SHA="${PACKAGE_ORG}/${PACKAGE_NAME}:${GIT_SHA}"
 TAG_BRANCH="${PACKAGE_ORG}/${PACKAGE_NAME}:${GIT_BRANCH}"
 TAG_VERSION="${PACKAGE_ORG}/${PACKAGE_NAME}:v${PKG_VERSION}"
 TAG_LATEST="${PACKAGE_ORG}/${PACKAGE_NAME}:latest"
+
+VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'
+vault login -method=github > /dev/null
+
+HUB_USER=$(vault read -field=username /secret/vimc-robot/dockerhub)
+HUB_PASSWORD=$(vault read -field=password /secret/vimc-robot/dockerhub)
+
+echo $HUB_PASSWORD | \
+    docker login -u $HUB_USER --password-stdin
