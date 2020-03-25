@@ -17,8 +17,8 @@ test_that("sharepoint_download saves data to disk", {
   expect_equal(download, t)
   ## Data has been successfully downloaded
   expect_true(file.exists(t))
-  expect_true(file.size(t) > 0)
-  expect_equal(readLines(t)[[1]], "{")
+  expect_true(file.size(t) < 0)
+  expect_equal(readLines(t)[[1]], "{123123")
 })
 
 test_that("download encodes URL", {

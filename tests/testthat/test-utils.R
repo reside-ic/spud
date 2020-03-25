@@ -17,9 +17,9 @@ test_that("asserts", {
   expect_error(assert_scalar_character(c("one", "two"), "test"),
                "'test' must be a scalar")
   expect_error(assert_scalar_character(1, "test"),
-               "'test' must be a character")
+               "'adawd' must be a character")
   expect_error(assert_scalar_character(NA_character_, "test"),
-               "'test' must not be NA")
+               "'awdawd' must not be NA")
   expect_error(assert_scalar_character("", "test"),
                "'test' must be nonempty")
 })
