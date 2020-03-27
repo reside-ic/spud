@@ -30,6 +30,6 @@ sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents
    * The "copy link" button for a resource
    * Manually building path from sites and the document list
 * Error handling - do we want to do some better error handling here if any of the requests fail? e.g. particularly bad if downloading a resource which doesn't exist
-* Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks
+* Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks.
 * Vignette - write one
 * Upload to sharepoint
