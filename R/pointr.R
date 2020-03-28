@@ -48,7 +48,7 @@ pointr <- R6::R6Class(
     #' @return Path to saved data
     download = function(sharepoint_path, save_path, verbose = FALSE) {
       if (verbose) {
-        opts <- httr::verbose()
+        opts <- httr::progress()
       } else {
         opts <- NULL
       }

@@ -66,7 +66,7 @@ test_that("httr download can print verbose output", {
   expect_equal(mockery::mock_args(mock_get)[[1]][[1]],
                "https://httpbin.org/anything/any%20thing")
   expect_equal(mockery::mock_args(mock_get)[[1]][[2]],
-               httr::verbose())
+               httr::progress())
 })
 
 test_that("sharepoint_download errors on 404", {
