@@ -6,8 +6,9 @@ get_pass <- function(prompt) {
   getPass::getPass(prompt, TRUE) # nocov
 }
 
-read_line <- function(prompt) {
-  clean_input_text(readline(prompt = prompt)) # nocov
+get_string <- function(prompt) {
+  message(prompt, appendLF = FALSE)
+  clean_input_text(scan("stdin", character(), n = 1, quiet = TRUE))
 }
 
 clean_input_text <- function(x) {
