@@ -68,3 +68,22 @@ test_that("httr download can print verbose output", {
   expect_equal(mockery::mock_args(mock_get)[[1]][[2]],
                httr::verbose())
 })
+
+test_that("sharepoint_download errors on 404", {
+  ## Mock out authentication steps
+  security_token_res <- readRDS("mocks/security_token_response.rds")
+  cookies_res <- readRDS("mocks/cookies_response.rds")
+  mock_post <- mockery::mock(security_token_res, cookies_res)
+
+  t <- tempfile()
+  withr::with_envvar(
+    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
+    with_mock("httr::POST" = mock_post, {
+      expect_error(
+        sharepoint_download("https://httpbin.org", "/status/404", t),
+        "Remote file not found at '/status/404'")
+    })
+  )
+
+  expect_false(file.exists(t))
+})

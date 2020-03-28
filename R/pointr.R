@@ -55,6 +55,11 @@ pointr <- R6::R6Class(
       res <- private$client$GET(URLencode(sharepoint_path),
                                 opts,
                                 httr::write_disk(save_path))
+      if (httr::status_code(res) == 404) {
+        unlink(save_path)
+        stop(sprintf("Remote file not found at '%s'", sharepoint_path))
+      }
+      httr::stop_for_status(res)
       save_path
     }
   ),
