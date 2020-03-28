@@ -35,5 +35,5 @@ get_single_credential <- function(env_var, credential, read_func) {
 
 ## This exists just so we can mock it in tests as you can't mock base functions
 is_interactive <- function() {
-  interactive()
+  interactive() # nocov
 }
