@@ -27,7 +27,7 @@ test_that("download encodes URL", {
   cookies_res <- readRDS("mocks/cookies_response.rds")
   mock_post <- mockery::mock(security_token_res, cookies_res)
 
-  mock_get <- mockery::mock("response")
+  mock_get <- mockery::mock(mock_response())
 
   t <- tempfile()
   withr::with_envvar(
@@ -50,7 +50,7 @@ test_that("httr download can print verbose output", {
   cookies_res <- readRDS("mocks/cookies_response.rds")
   mock_post <- mockery::mock(security_token_res, cookies_res)
 
-  mock_get <- mockery::mock("response")
+  mock_get <- mockery::mock(mock_response())
 
   t <- tempfile()
   withr::with_envvar(

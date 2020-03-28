@@ -16,3 +16,10 @@ mock_sharepoint_client <- function(sharepoint_url) {
   )
   client
 }
+
+
+mock_response <- function(status_code = 200L) {
+  structure(
+    list(status_code = status_code),
+    class = "response")
+}
