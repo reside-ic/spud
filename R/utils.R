@@ -7,8 +7,14 @@ get_pass <- function(prompt) {
 }
 
 get_string <- function(prompt) {
-  message(prompt, appendLF = FALSE) # nocov
-  clean_input_text(scan("stdin", character(), n = 1, quiet = TRUE)) # nocov
+  # nocov start
+  if (interactive()) {
+    clean_input_text(readline(prompt))
+  } else {
+    message(prompt, appendLF = FALSE)
+    clean_input_text(scan("stdin", character(), n = 1, quiet = TRUE))
+  }
+  # nocov end
 }
 
 clean_input_text <- function(x) {
