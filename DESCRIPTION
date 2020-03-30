@@ -1,6 +1,6 @@
 Package: pointr
 Title: Enables downloading of data from sharepoint
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     person(given = "Robert",
            family = "Ashton",
