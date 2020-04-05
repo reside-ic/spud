@@ -1,13 +1,13 @@
 steps:
-  - label: "Build"
+  - label: ":whale: Build"
     command: docker/build
 
   - wait
 
-  - label: "Test"
+  - label: ":hammer: Test"
     command: docker/test
 
   - wait
 
-  - label: "Publish"
+  - label: ":shipit: Publish"
     command: docker/push
