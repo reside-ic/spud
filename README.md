@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Build status](https://badge.buildkite.com/2f80635022481989da55f4be29951a8f0902eedea92956761e.svg)](https://buildkite.com/mrc-ide/pointr)
 [![Travis build status](https://travis-ci.org/reside-ic/pointr.svg?branch=master)](https://travis-ci.org/reside-ic/pointr)
 [![codecov.io](https://codecov.io/github/reside-ic/pointr/coverage.svg?branch=master)](https://codecov.io/github/reside-ic/pointr?branch=master)
 <!-- badges: end -->
@@ -29,6 +30,6 @@ sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents
    * The "copy link" button for a resource
    * Manually building path from sites and the document list
 * Error handling - do we want to do some better error handling here if any of the requests fail? e.g. particularly bad if downloading a resource which doesn't exist
-* Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks
+* Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks.
 * Vignette - write one!
 * Upload to sharepoint
