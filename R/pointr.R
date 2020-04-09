@@ -50,7 +50,9 @@ pointr <- R6::R6Class(
     #' @param save_path Path to save downloaded data to
     #' @param verbose If TRUE then HTTP requests will print verbose output
     #' @return Path to saved data
-    download = function(sharepoint_path, save_path, verbose = FALSE) {
+    download = function(sharepoint_path,
+                        save_path = tempfile_inherit_ext(sharepoint_path),
+                        verbose = FALSE) {
       if (verbose) {
         opts <- httr::progress()
       } else {
