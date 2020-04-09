@@ -54,5 +54,8 @@ pointr_file <- function(...) {
 }
 
 tempfile_inherit_ext <- function(file) {
-  tempfile(fileext = paste0(".", tools::file_ext(file)))
+  ext <- tools::file_ext(file)
+  if(ext != "")
+    ext <- paste0(".", ext)
+  tempfile(fileext = ext)
 }

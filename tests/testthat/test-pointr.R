@@ -87,3 +87,23 @@ test_that("sharepoint_download errors on 404", {
 
   expect_false(file.exists(t))
 })
+
+test_that("sharepoint_download default save_path inherits file extension", {
+
+  ## TODO: this is a pretty poor test, but I don't know how to 'mock' download
+  ##       a file with an extension.
+
+  ## Mock out authentication steps
+  security_token_res <- readRDS("mocks/security_token_response.rds")
+  cookies_res <- readRDS("mocks/cookies_response.rds")
+  mock_post <- mockery::mock(security_token_res, cookies_res)
+
+  withr::with_envvar(
+    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
+    with_mock("httr::POST" = mock_post, {
+      download <- sharepoint_download("https://httpbin.org", "/json")
+    })
+  )
+
+  expect_equal(tools::file_ext(download), "" )
+})

@@ -24,10 +24,12 @@ test_that("asserts", {
                "'test' must be nonempty")
 })
 
-test_that("tempfile_inherit_ext" {
+test_that("tempfile_inherit_ext", {
 
   tmpf <- tempfile_inherit_ext("jibberish.wahoo")
-
   expect_equal(tools::file_ext(tmpf), "wahoo")
   expect_equal(dirname(tmpf), tempdir())
+
+  tmpf2 <- tempfile_inherit_ext("jibberish")
+  expect_equal(tools::file_ext(tmpf2), "")
 })
