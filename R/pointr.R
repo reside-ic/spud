@@ -12,13 +12,17 @@
 #' in a browser and click menu on the RHS of the file name which appears on
 #' hover -> Copy link and manually edit to get the file path. See vignette for
 #' more details.
-#' @param save_path Path to location you want to save the data
+#' @param save_path Path to location you want to save the data. The default
+#' save location is a tempfile with the same file extension as the downloaded
+#' file.
 #' @param verbose If TRUE then HTTP requests will print verbose output
 #'
 #' @return Path to downloaded data
+#'
 #' @export
 sharepoint_download <- function(sharepoint_url, sharepoint_path,
-                                save_path = tempfile(), verbose = FALSE) {
+                                save_path = tempfile_inherit_ext(sharepoint_path),
+                                verbose = FALSE) {
   pointr <- pointr$new(sharepoint_url)
   pointr$download(sharepoint_path, save_path, verbose)
 }
@@ -46,7 +50,9 @@ pointr <- R6::R6Class(
     #' @param save_path Path to save downloaded data to
     #' @param verbose If TRUE then HTTP requests will print verbose output
     #' @return Path to saved data
-    download = function(sharepoint_path, save_path, verbose = FALSE) {
+    download = function(sharepoint_path,
+                        save_path = tempfile_inherit_ext(sharepoint_path),
+                        verbose = FALSE) {
       if (verbose) {
         opts <- httr::progress()
       } else {

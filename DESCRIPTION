@@ -1,6 +1,6 @@
 Package: pointr
 Title: Enables downloading of data from sharepoint
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: 
     person(given = "Robert",
            family = "Ashton",
@@ -19,6 +19,7 @@ Imports:
     getPass,
     glue,
     httr,
+    tools,
     xml2
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
