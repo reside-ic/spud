@@ -99,6 +99,7 @@ download <- function(client, url, dest, progress) {
   dest
 }
 
+
 `%||%` <- function(a, b) {
   if (is.null(a)) b else a
 }

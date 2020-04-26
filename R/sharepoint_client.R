@@ -76,6 +76,15 @@ sharepoint_client <- R6::R6Class(
     request = function(verb, path, ...) {
       url <- paste(self$sharepoint_url, path, sep = "/")
       verb(url, ..., handle = private$handle)
+    },
+
+    ## TODO: should there be a site class for this?
+    digest = function(site) {
+      url <- sprintf("/sites/%s/_api/contextinfo", site)
+      r <- self$POST(url, httr::accept_json())
+      httr::stop_for_status(r)
+      dat <- response_from_json(r)
+      httr::add_headers("X-RequestDigest" = dat$FormDigestValue)
     }
   ),
 

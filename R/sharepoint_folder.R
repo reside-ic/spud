@@ -88,5 +88,17 @@ sharepoint_folder <- R6::R6Class(
                      private$api_root, URLencode(path))
       dest <- dest %||% tempfile_inherit_ext(path)
       download(private$client, url, dest, progress)
+    },
+
+    upload = function(path, dest = NULL, progress = FALSE) {
+      opts <- if (progress) httr::progress("up") else NULL
+      dest <- dest %||% basename(path)
+      url <- sprintf("%s/Files/Add(url='%s',overwrite=true)",
+                     private$api_root, URLencode(dest))
+      digest <- private$client$digest(private$site)
+      body <- httr::upload_file(path, "application/octet-stream")
+      r <- private$client$POST(url, body = body, opts, digest)
+      httr::stop_for_status(r)
+      invisible()
     }
   ))
