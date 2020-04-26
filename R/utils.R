@@ -86,3 +86,19 @@ vnapply <- function(X, FUN, ...) {
 to_time <- function(str) {
   strptime(str, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 }
+
+
+download <- function(client, url, dest, progress) {
+  opts <- if (progress) httr::progress() else NULL
+  r <- client$GET(url, opts, httr::write_disk(dest))
+  if (httr::status_code(r) == 404) {
+    unlink(dest)
+    stop(sprintf("Remote file not found at '%s'", path))
+  }
+  httr::stop_for_status(r)
+  dest
+}
+
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}

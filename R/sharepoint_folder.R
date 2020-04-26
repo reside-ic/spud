@@ -12,7 +12,8 @@ sharepoint_folder <- R6::R6Class(
   private = list(
     client = NULL,
     site = NULL,
-    path = NULL
+    path = NULL,
+    api_root = NULL
   ),
 
   public = list(
@@ -21,6 +22,9 @@ sharepoint_folder <- R6::R6Class(
       private$client <- client
       private$site <- site
       private$path <- path
+      private$api_root <- sprintf(
+        "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')",
+        site, URLencode(path))
       if (verify) {
         url <- sprintf("/sites/%s/_api/%s", private$name, private$site)
         httr::stop_fot_status(private$client$GET(url))
@@ -77,5 +81,12 @@ sharepoint_folder <- R6::R6Class(
     folder = function(path) {
       sharepoint_folder$new(private$client, private$site,
                             file.path(private$path, path))
+    },
+
+    download = function(path, dest = NULL, progress = FALSE) {
+      url <- sprintf("%s/Files('%s')/$value",
+                     private$api_root, URLencode(path))
+      dest <- dest %||% tempfile_inherit_ext(path)
+      download(private$client, url, dest, progress)
     }
   ))
