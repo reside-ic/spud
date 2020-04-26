@@ -88,7 +88,7 @@ to_time <- function(str) {
 }
 
 
-download <- function(client, url, dest, progress) {
+download <- function(client, url, dest, path, progress) {
   opts <- if (progress) httr::progress() else NULL
   r <- client$GET(url, opts, httr::write_disk(dest))
   if (httr::status_code(r) == 404) {

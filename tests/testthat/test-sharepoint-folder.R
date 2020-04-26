@@ -75,6 +75,23 @@ test_that("download from folder", {
 })
 
 
+test_that("download from folder fails with informative message if missing", {
+  p <- mock_pointr()
+  folder <- p$folder("site", "a/b/c")
+
+  mock_get <- mockery::mock(mock_response(404))
+  expect_error(
+    with_mock("httr::GET" = mock_get, folder$download("file.txt")),
+    "Remote file not found at 'site:a/b/c/file.txt'")
+
+  mockery::expect_called(mock_get, 1)
+  expect_equal(
+    mockery::mock_args(mock_get)[[1]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('a/b/c')/Files('file.txt')/$value"))
+})
+
+
 test_that("upload", {
   p <- mock_pointr()
   folder <- p$folder("site", "a/b/c")

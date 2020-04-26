@@ -106,7 +106,8 @@ sharepoint_folder <- R6::R6Class(
       url <- sprintf("%s/Files('%s')/$value",
                      private$api_root, URLencode(path))
       dest <- dest %||% tempfile_inherit_ext(path)
-      download(private$client, url, dest, progress)
+      path_show <- sprintf("%s:%s/%s", private$site, private$path, path)
+      download(private$client, url, dest, path_show, progress)
     },
 
     #' @description Upload a fole into a folder
