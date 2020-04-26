@@ -67,6 +67,21 @@ pointr <- R6::R6Class(
       }
       httr::stop_for_status(res)
       save_path
+    },
+
+    #' @description
+    #' Create a \code{folder} object representing a sharepoint folder,
+    #' with which one can list, download and upload files.  See
+    #' \code{\link{sharepoint_folder}} for more details.
+    #'
+    #' @param site The name of the sharepoint site (most likely a short string)
+    #'
+    #' @param path Relative path within that shared site.  It seems
+    #' that "Shared Documents" is a common path that most likely
+    #' represents a "Documents" collection when viewed in the
+    #' sharepoint web interface.
+    folder = function(site, path) {
+      sharepoint_folder$new(private$client, site, path)
     }
   ),
 

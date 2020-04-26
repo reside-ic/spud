@@ -60,3 +60,29 @@ tempfile_inherit_ext <- function(file) {
   }
   tempfile(fileext = ext)
 }
+
+
+response_from_json <- function(x, simplifyVector = FALSE, ...) {
+  txt <- httr::content(x, "text", encoding = "UTF-8")
+  jsonlite::fromJSON(txt, simplifyVector, ...)
+}
+
+
+vcapply <- function(X, FUN, ...) {
+  vapply(X, FUN, character(1), ...)
+}
+
+
+vlapply <- function(X, FUN, ...) {
+  vapply(X, FUN, logical(1), ...)
+}
+
+
+vnapply <- function(X, FUN, ...) {
+  vapply(X, FUN, numeric(1), ...)
+}
+
+
+to_time <- function(str) {
+  strptime(str, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+}
