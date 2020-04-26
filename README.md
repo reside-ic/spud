@@ -1,7 +1,7 @@
 <!-- badges: start -->
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Build status](https://badge.buildkite.com/2f80635022481989da55f4be29951a8f0902eedea92956761e.svg)](https://buildkite.com/mrc-ide/pointr)
-[![Travis build status](https://travis-ci.org/reside-ic/pointr.svg?branch=master)](https://travis-ci.org/reside-ic/pointr)
+[![Travis build status](https://travis-ci.com/reside-ic/pointr.svg?branch=master)](https://travis-ci.com/reside-ic/pointr)
 [![codecov.io](https://codecov.io/github/reside-ic/pointr/coverage.svg?branch=master)](https://codecov.io/github/reside-ic/pointr?branch=master)
 <!-- badges: end -->
 
