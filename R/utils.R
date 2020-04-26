@@ -73,11 +73,6 @@ vcapply <- function(X, FUN, ...) {
 }
 
 
-vlapply <- function(X, FUN, ...) {
-  vapply(X, FUN, logical(1), ...)
-}
-
-
 vnapply <- function(X, FUN, ...) {
   vapply(X, FUN, numeric(1), ...)
 }
