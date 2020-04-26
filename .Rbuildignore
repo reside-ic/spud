@@ -2,5 +2,6 @@
 ^\.Rproj\.user$
 ^\.travis\.yml$
 ^\.lintr$
-^\.buildkite$
+^buildkite$
+^docker$
 ^Makefile$
