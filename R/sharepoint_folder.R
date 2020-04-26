@@ -18,16 +18,20 @@ sharepoint_folder <- R6::R6Class(
 
   public = list(
     initialize = function(client, site, path, verify = FALSE) {
-      ## TODO: no validation
       private$client <- client
       private$site <- site
       private$path <- path
       private$api_root <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')",
         site, URLencode(path))
+
       if (verify) {
-        url <- sprintf("/sites/%s/_api/%s", private$name, private$site)
-        httr::stop_fot_status(private$client$GET(url))
+        r <- private$client$GET(private$api_root)
+        if (httr::status_code(r) == 404) {
+          stop(sprintf("Path '%s' was not found on site '%s'", path, site),
+               call. = FALSE)
+        }
+        httr::stop_for_status(r)
       }
     },
 

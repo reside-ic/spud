@@ -80,8 +80,7 @@ test_that("upload", {
   folder <- p$folder("site", "a/b/c")
 
   contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
-  upload_res <- structure(list(status_code = 200), class = "response")
-  mock_post <- mockery::mock(contextinfo_res, upload_res)
+  mock_post <- mockery::mock(contextinfo_res, mock_response(200))
   tmp <- tempfile()
   writeLines("content", tmp)
 
@@ -100,4 +99,28 @@ test_that("upload", {
     paste0("https://httpbin.org//sites/site/_api/web/",
            "GetFolderByServerRelativeURL('a/b/c')/Files/",
            "Add(url='file.txt',overwrite=true)"))
+})
+
+
+test_that("verify folder exists", {
+  p <- mock_pointr()
+  mock_get <- mockery::mock(mock_response(200), mock_response(404))
+
+  expect_is(
+    with_mock("httr::GET" = mock_get,
+              p$folder("site", "a/b/c", verify = TRUE)),
+    "sharepoint_folder")
+  expect_error(
+    with_mock("httr::GET" = mock_get,
+              p$folder("site", "a/b/c", verify = TRUE)),
+    "Path 'a/b/c' was not found on site 'site'")
+
+  mockery::expect_called(mock_get, 2)
+  expect_equal(
+    mockery::mock_args(mock_get)[[1]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('a/b/c')"))
+  expect_equal(
+    mockery::mock_args(mock_get)[[2]][[1]],
+    mockery::mock_args(mock_get)[[1]][[1]])
 })
