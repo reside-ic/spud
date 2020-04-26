@@ -57,6 +57,15 @@ test_that("get parent directory", {
 })
 
 
+test_that("get child directory", {
+  p <- mock_pointr()
+  folder <- p$folder("site", "a")
+  child <- folder$folder("b")$folder("c")
+  expect_is(folder, "sharepoint_folder")
+  expect_equal(r6_private(child)$path, "a/b/c")
+})
+
+
 test_that("download from folder", {
   p <- mock_pointr()
   folder <- p$folder("site", "a/b/c")
