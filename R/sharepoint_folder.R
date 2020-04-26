@@ -6,8 +6,10 @@
 ## which seems to be the documentation for the underlying code that
 ## the API is built on top of
 
+#' Interact with sharepoint folders and their files.
 sharepoint_folder <- R6::R6Class(
   "sharepoint_folder",
+  cloneable = FALSE,
 
   private = list(
     client = NULL,
@@ -35,6 +37,7 @@ sharepoint_folder <- R6::R6Class(
       }
     },
 
+    #' @description List all files within the folder
     files = function() {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/files",
@@ -51,6 +54,7 @@ sharepoint_folder <- R6::R6Class(
         modified = to_time(vcapply(dat$value, "[[", "TimeLastModified")))
     },
 
+    #' @description List all folders within the folder
     folders = function() {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/folders",
@@ -65,7 +69,8 @@ sharepoint_folder <- R6::R6Class(
         modified = to_time(vcapply(dat$value, "[[", "TimeLastModified")))
     },
 
-    ## Helper function
+    #' @description List all folders and files within the folder; this is a
+    #' convenience wrapper around the \code{files} and \code{folders} methods.
     list = function() {
       folders <- self$folders()
       files <- self$files()
@@ -77,16 +82,26 @@ sharepoint_folder <- R6::R6Class(
       rbind(folders[v], files[v])
     },
 
-    parent = function() {
+    #' @description Create an object referring to the parent folder
+    #' @param verify Verify that the folder exists (which it must really here)
+    parent = function(verify = FALSE) {
       sharepoint_folder$new(private$client, private$site,
-                            dirname(private$path))
+                            dirname(private$path), verify)
     },
 
-    folder = function(path) {
+    #' @description Create an object referring to a child folder
+    #' @param path The name of the folder, relative to this folder
+    #' @param verify Verify that the folder exists (which it must really here)
+    folder = function(path, verify = FALSE) {
       sharepoint_folder$new(private$client, private$site,
-                            file.path(private$path, path))
+                            file.path(private$path, path), verify)
     },
 
+    #' @description Download a file from a folder
+    #' @param path The name of the path to download, relative to this folder
+    #' @param dest Path to save downloaded data to. If \code{NULL} then a
+    #'   temporary file with the same file extension as \code{path} is used.
+    #' @param progress Display httr's progress bar?
     download = function(path, dest = NULL, progress = FALSE) {
       url <- sprintf("%s/Files('%s')/$value",
                      private$api_root, URLencode(path))
@@ -94,6 +109,12 @@ sharepoint_folder <- R6::R6Class(
       download(private$client, url, dest, progress)
     },
 
+    #' @description Upload a fole into a folder
+    #' @param path The name of the path to upload, absolute, or relative to
+    #' R's working directory.
+    #' @param dest Remote path save downloaded data to, relative to this
+    #' folder.  If \code{NULL} then the basename of the file is used.
+    #' @param progress Display httr's progress bar?
     upload = function(path, dest = NULL, progress = FALSE) {
       opts <- if (progress) httr::progress("up") else NULL
       dest <- dest %||% basename(path)

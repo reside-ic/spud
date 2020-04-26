@@ -7,7 +7,7 @@
 sharepoint_download(
   sharepoint_url,
   sharepoint_path,
-  save_path = tempfile(),
+  save_path = tempfile_inherit_ext(sharepoint_path),
   verbose = FALSE
 )
 }
@@ -26,7 +26,9 @@ in a browser and click menu on the RHS of the file name which appears on
 hover -> Copy link and manually edit to get the file path. See vignette for
 more details.}
 
-\item{save_path}{Path to location you want to save the data}
+\item{save_path}{Path to location you want to save the data. The default
+save location is a tempfile with the same file extension as the downloaded
+file.}
 
 \item{verbose}{If TRUE then HTTP requests will print verbose output}
 }

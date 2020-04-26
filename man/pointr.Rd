@@ -13,6 +13,7 @@ Create sharepoint connection for downloading data.
 \itemize{
 \item \href{#method-new}{\code{pointr$new()}}
 \item \href{#method-download}{\code{pointr$download()}}
+\item \href{#method-folder}{\code{pointr$folder()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -39,7 +40,11 @@ A new \code{pointr} object
 \subsection{Method \code{download()}}{
 Download data from sharepoint
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{pointr$download(sharepoint_path, save_path, verbose = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{pointr$download(
+  sharepoint_path,
+  save_path = tempfile_inherit_ext(sharepoint_path),
+  verbose = FALSE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -55,6 +60,32 @@ Download data from sharepoint
 }
 \subsection{Returns}{
 Path to saved data
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-folder"></a>}}
+\subsection{Method \code{folder()}}{
+Create a \code{folder} object representing a sharepoint folder,
+with which one can list, download and upload files.  See
+\code{\link{sharepoint_folder}} for more details.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{pointr$folder(site, path, verify = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{site}}{The name of the sharepoint site (most likely a short string)}
+
+\item{\code{path}}{Relative path within that shared site.  It seems
+that "Shared Documents" is a common path that most likely
+represents a "Documents" collection when viewed in the
+sharepoint web interface.}
+
+\item{\code{verify}}{Logical, indicating if the site/path combination is
+valid (slower but safer).}
+}
+\if{html}{\out{</div>}}
 }
 }
 }

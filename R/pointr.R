@@ -80,8 +80,11 @@ pointr <- R6::R6Class(
     #' that "Shared Documents" is a common path that most likely
     #' represents a "Documents" collection when viewed in the
     #' sharepoint web interface.
-    folder = function(site, path) {
-      sharepoint_folder$new(private$client, site, path)
+    #'
+    #' @param verify Logical, indicating if the site/path combination is
+    #' valid (slower but safer).
+    folder = function(site, path, verify = FALSE) {
+      sharepoint_folder$new(private$client, site, path, verify)
     }
   ),
 
