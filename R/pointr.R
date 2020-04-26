@@ -48,13 +48,13 @@ pointr <- R6::R6Class(
     #' Download data from sharepoint
     #' @param sharepoint_path Path to the resource within sharepoint
     #' @param save_path Path to save downloaded data to
-    #' @param verbose If TRUE then HTTP requests will print verbose output
+    #' @param progress Display a progress bar during download?
     #' @return Path to saved data
     download = function(sharepoint_path,
                         save_path = tempfile_inherit_ext(sharepoint_path),
-                        verbose = FALSE) {
+                        progress = FALSE) {
       download(private$client, URLencode(sharepoint_path), save_path,
-               sharepoint_path, verbose)
+               sharepoint_path, progress)
     },
 
     #' @description

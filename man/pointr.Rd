@@ -43,7 +43,7 @@ Download data from sharepoint
 \if{html}{\out{<div class="r">}}\preformatted{pointr$download(
   sharepoint_path,
   save_path = tempfile_inherit_ext(sharepoint_path),
-  verbose = FALSE
+  progress = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -54,7 +54,7 @@ Download data from sharepoint
 
 \item{\code{save_path}}{Path to save downloaded data to}
 
-\item{\code{verbose}}{If TRUE then HTTP requests will print verbose output}
+\item{\code{progress}}{Display a progress bar during download?}
 }
 \if{html}{\out{</div>}}
 }
