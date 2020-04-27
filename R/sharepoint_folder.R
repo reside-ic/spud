@@ -14,8 +14,7 @@ sharepoint_folder <- R6::R6Class(
   private = list(
     client = NULL,
     site = NULL,
-    path = NULL,
-    api_root = NULL
+    path = NULL
   ),
 
   public = list(
@@ -23,12 +22,9 @@ sharepoint_folder <- R6::R6Class(
       private$client <- client
       private$site <- site
       private$path <- path
-      private$api_root <- sprintf(
-        "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')",
-        site, URLencode(path))
 
       if (verify) {
-        r <- private$client$GET(private$api_root)
+        r <- private$client$GET(sharepoint_folder_url(site, path))
         if (httr::status_code(r) == 404) {
           stop(sprintf("Path '%s' was not found on site '%s'", path, site),
                call. = FALSE)
@@ -103,8 +99,10 @@ sharepoint_folder <- R6::R6Class(
     #'   temporary file with the same file extension as \code{path} is used.
     #' @param progress Display httr's progress bar?
     download = function(path, dest = NULL, progress = FALSE) {
-      url <- sprintf("%s/Files('%s')/$value",
-                     private$api_root, URLencode(path))
+      url <- sprintf(
+        "%s/Files('%s')/$value",
+        sharepoint_folder_file_url(private$site, private$path, path),
+        URLencode(basename(path)))
       dest <- dest %||% tempfile_inherit_ext(path)
       path_show <- sprintf("%s:%s/%s", private$site, private$path, path)
       download(private$client, url, dest, path_show, progress)
@@ -119,8 +117,10 @@ sharepoint_folder <- R6::R6Class(
     upload = function(path, dest = NULL, progress = FALSE) {
       opts <- if (progress) httr::progress("up") else NULL
       dest <- dest %||% basename(path)
-      url <- sprintf("%s/Files/Add(url='%s',overwrite=true)",
-                     private$api_root, URLencode(dest))
+      url <- sprintf(
+        "%s/Files/Add(url='%s',overwrite=true)",
+        sharepoint_folder_file_url(private$site, private$path, dest),
+        URLencode(basename(dest)))
       digest <- private$client$digest(private$site)
       body <- httr::upload_file(path, "application/octet-stream")
       r <- private$client$POST(url, body = body, opts, digest)
@@ -128,3 +128,18 @@ sharepoint_folder <- R6::R6Class(
       invisible()
     }
   ))
+
+
+sharepoint_folder_url <- function(site, folder) {
+  sprintf("/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')",
+          site, URLencode(folder))
+}
+
+
+sharepoint_folder_file_url <- function(site, folder, path) {
+  filename <- basename(path)
+  if (filename != path) {
+    folder <- file.path(folder, dirname(path))
+  }
+  sharepoint_folder_url(site, folder)
+}

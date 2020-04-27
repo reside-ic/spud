@@ -84,6 +84,24 @@ test_that("download from folder", {
 })
 
 
+test_that("download from subdirectory", {
+  p <- mock_pointr()
+  folder <- p$folder("site", "a/b")
+
+  mock_get <- mockery::mock(mock_response())
+  res <- with_mock(
+    "httr::GET" = mock_get,
+    folder$download("c/file.txt"))
+
+  expect_match(res, "\\.txt$")
+  mockery::expect_called(mock_get, 1)
+  expect_equal(
+    mockery::mock_args(mock_get)[[1]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('a/b/c')/Files('file.txt')/$value"))
+})
+
+
 test_that("download from folder fails with informative message if missing", {
   p <- mock_pointr()
   folder <- p$folder("site", "a/b/c")
@@ -113,6 +131,33 @@ test_that("upload", {
   res <- with_mock(
     "httr::POST" = mock_post,
     folder$upload(tmp, "file.txt"))
+  expect_null(res)
+
+  mockery::expect_called(mock_post, 2)
+  expect_equal(
+    mockery::mock_args(mock_post)[[1]][[1]],
+    "https://httpbin.org//sites/site/_api/contextinfo")
+
+  expect_equal(
+    mockery::mock_args(mock_post)[[2]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('a/b/c')/Files/",
+           "Add(url='file.txt',overwrite=true)"))
+})
+
+
+test_that("upload to subdirectory", {
+  p <- mock_pointr()
+  folder <- p$folder("site", "a/b")
+
+  contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
+  mock_post <- mockery::mock(contextinfo_res, mock_response(200))
+  tmp <- tempfile()
+  writeLines("content", tmp)
+
+  res <- with_mock(
+    "httr::POST" = mock_post,
+    folder$upload(tmp, "c/file.txt"))
   expect_null(res)
 
   mockery::expect_called(mock_post, 2)
