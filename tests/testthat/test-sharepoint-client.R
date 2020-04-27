@@ -95,3 +95,49 @@ test_that("can validate cookies",  {
   "Failed to retrieve all required cookies from URL 'https://httpbin.org/cookies'.
 Must provide rtFa and FedAuth cookies, got test, test2", fixed = TRUE)
 })
+
+test_that("can retrieve auth cookies", {
+  ## Mock out sharepoint interactions
+  security_token_res <- readRDS("mocks/security_token_response.rds")
+  cookies_res <- readRDS("mocks/cookies_response.rds")
+  contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
+  contextinfo_res$cookies <- cookies_res$cookies
+
+  mock_post <- mockery::mock(security_token_res, cookies_res, contextinfo_res)
+  client <- withr::with_envvar(
+    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
+    with_mock("httr::POST" = mock_post, {
+      sharepoint_client$new("https://httpbin.org")
+    })
+  )
+
+  ## Set cookies somewhat awkwardly as there does not seem to be an
+  ## API to do this in curl directly - it has to come out of the
+  ## request.
+  urls <- sprintf("cookies/set/%s/%s", cookies_res$cookies$name,
+                  cookies_res$cookies$value)
+  for (u in urls) {
+    client$GET(u)
+  }
+
+  d <- client$get_auth_data()
+  expect_is(d, "raw")
+  dat <- unserialize(d)
+  expect_is(dat, "data.frame")
+  expect_equal(dat$name, c("rtFa", "FedAuth"))
+  expect_equal(dat$value, c("example_rtFa", "example_FedAuth"))
+
+  ## Then create a new client, which will call the mock and will
+  ## not read the environment variables
+  client <- withr::with_envvar(
+    c("SHAREPOINT_USERNAME" = NA, "SHAREPOINT_PASS" = NA),
+    with_mock("httr::POST" = mock_post, {
+      sharepoint_client$new("https://httpbin.org", d)
+    }))
+  mockery::expect_called(mock_post, 3)
+  args <- mockery::mock_args(mock_post)[[3]]
+  expect_equal(args[[1]], "https://httpbin.org//_api/contextinfo")
+  expect_equal(
+    args[[3]],
+    httr::config(cookie = "rtFa=example_rtFa; FedAuth=example_FedAuth"))
+})
