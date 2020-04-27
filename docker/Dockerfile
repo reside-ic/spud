@@ -14,9 +14,11 @@ RUN install_packages --repo=https://mrc-ide.github.io/drat \
     getPass \
     glue \
     httr \
-    xml2 \
+    jsonlite \
     mockery \
     testthat \
-    withr
+    tibble \
+    withr \
+    xml2
 
 COPY . /src

@@ -48,25 +48,31 @@ pointr <- R6::R6Class(
     #' Download data from sharepoint
     #' @param sharepoint_path Path to the resource within sharepoint
     #' @param save_path Path to save downloaded data to
-    #' @param verbose If TRUE then HTTP requests will print verbose output
+    #' @param progress Display a progress bar during download?
     #' @return Path to saved data
     download = function(sharepoint_path,
                         save_path = tempfile_inherit_ext(sharepoint_path),
-                        verbose = FALSE) {
-      if (verbose) {
-        opts <- httr::progress()
-      } else {
-        opts <- NULL
-      }
-      res <- private$client$GET(URLencode(sharepoint_path),
-                                opts,
-                                httr::write_disk(save_path))
-      if (httr::status_code(res) == 404) {
-        unlink(save_path)
-        stop(sprintf("Remote file not found at '%s'", sharepoint_path))
-      }
-      httr::stop_for_status(res)
-      save_path
+                        progress = FALSE) {
+      download(private$client, URLencode(sharepoint_path), save_path,
+               sharepoint_path, progress)
+    },
+
+    #' @description
+    #' Create a \code{folder} object representing a sharepoint folder,
+    #' with which one can list, download and upload files.  See
+    #' \code{\link{sharepoint_folder}} for more details.
+    #'
+    #' @param site The name of the sharepoint site (most likely a short string)
+    #'
+    #' @param path Relative path within that shared site.  It seems
+    #' that "Shared Documents" is a common path that most likely
+    #' represents a "Documents" collection when viewed in the
+    #' sharepoint web interface.
+    #'
+    #' @param verify Logical, indicating if the site/path combination is
+    #' valid (slower but safer).
+    folder = function(site, path, verify = FALSE) {
+      sharepoint_folder$new(private$client, site, path, verify)
     }
   ),
 

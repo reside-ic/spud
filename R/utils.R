@@ -60,3 +60,41 @@ tempfile_inherit_ext <- function(file) {
   }
   tempfile(fileext = ext)
 }
+
+
+response_from_json <- function(x, simplifyVector = FALSE, ...) {
+  txt <- httr::content(x, "text", encoding = "UTF-8")
+  jsonlite::fromJSON(txt, simplifyVector, ...)
+}
+
+
+vcapply <- function(X, FUN, ...) {
+  vapply(X, FUN, character(1), ...)
+}
+
+
+vnapply <- function(X, FUN, ...) {
+  vapply(X, FUN, numeric(1), ...)
+}
+
+
+to_time <- function(str) {
+  strptime(str, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+}
+
+
+download <- function(client, url, dest, path, progress) {
+  opts <- if (progress) httr::progress() else NULL
+  r <- client$GET(url, opts, httr::write_disk(dest))
+  if (httr::status_code(r) == 404) {
+    unlink(dest)
+    stop(sprintf("Remote file not found at '%s'", path))
+  }
+  httr::stop_for_status(r)
+  dest
+}
+
+
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}

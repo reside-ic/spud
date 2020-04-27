@@ -18,8 +18,48 @@ mock_sharepoint_client <- function(sharepoint_url) {
 }
 
 
+mock_pointr <- function(sharepoint_url) {
+  security_token_res <- readRDS("mocks/security_token_response.rds")
+  cookies_res <- readRDS("mocks/cookies_response.rds")
+  mock_post <- mockery::mock(security_token_res, cookies_res)
+  t <- tempfile()
+  withr::with_envvar(
+    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
+    with_mock("httr::POST" = mock_post, {
+      pointr$new("https://httpbin.org")
+    })
+  )
+}
+
+
 mock_response <- function(status_code = 200L) {
   structure(
     list(status_code = status_code),
     class = "response")
+}
+
+
+strip_url <- function(x) {
+  gsub("https://[^/]+/sites/[^/]+/", "https://example.com/sites/mysite/", x)
+}
+
+
+strip_site <- function(x) {
+  gsub("/sites/[^/]+/", "/sites/mysite/", x)
+}
+
+strip_response <- function(r) {
+  r$url <- sub("https://.*?/sites/.*?/",
+               "https://example.com/sites/mysite/", r$url)
+  r$headers <- NULL
+  r$all_headers <- NULL
+  r$cookies <- NULL
+  r$request <- NULL
+  r$handle <- NULL
+  r
+}
+
+
+r6_private <- function(x) {
+  environment(x$initialize)$private
 }
