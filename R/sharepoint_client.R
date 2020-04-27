@@ -17,31 +17,54 @@ sharepoint_client <- R6::R6Class(
     #' to retrieve cookies used for subsequent authentication.
     #'
     #' @param sharepoint_url Root URL of sharepoint site to download from
+    #'
+    #' @param auth Authentication data as returned by the
+    #' \code{$get_auth_data()} method
+    #'
     #' @return A new `sharepoint_client` object
-    initialize = function(sharepoint_url) {
+    initialize = function(sharepoint_url, auth = NULL) {
       self$sharepoint_url <- sharepoint_url
-      private$handle <- httr::handle(sharepoint_url)
+      self$login(auth)
+    },
 
-      creds <- get_credentials()
-      response <- httr::POST(
-        "https://login.microsoftonline.com/extSTS.srf",
-        body = prepare_security_token_payload(self$sharepoint_url, creds))
-      ## Not sure if this ever returns a non 200 response but left here to
-      ## be safe. On failed auth it sends a different set of xml but still 200
-      if (response$status_code != 200) {
-        stop(sprintf("Failed to authenticate user '%s'.", creds$username))
+    #' @param auth Authentication data as returned by the
+    #' \code{$get_auth_data()} method
+    login = function(auth = NULL) {
+      private$handle <- httr::handle(self$sharepoint_url)
+      if (!is.null(auth)) {
+        stopifnot(is.raw(auth))
+        auth <- unserialize(auth)
+        ## construct manually because we can't escape this
+        cookies <- httr::config(cookie = paste(auth$name, auth$value,
+                                               sep = "=", collapse = "; "))
+        res <- self$POST("/_api/contextinfo", httr::accept_json(),
+                         cookies)
+        httr::stop_for_status(res)
+      } else {
+        creds <- get_credentials()
+        response <- httr::POST(
+          "https://login.microsoftonline.com/extSTS.srf",
+          body = prepare_security_token_payload(self$sharepoint_url, creds))
+        ## Not sure if this ever returns a non 200 response but left
+        ## here to be safe. On failed auth it sends a different set of
+        ## xml but still 200
+        if (response$status_code != 200) {
+          stop(sprintf("Failed to authenticate user '%s'.", creds$username))
+        }
+        ## Note that httr preserves cookies and settings over multiple
+        ## requests via the handle. Means that if we auth once and
+        ## retrieve cookies httr will automatically send these on
+        ## subsequent requests if using the same handle object
+        ##
+        ## These tokens last for ~24h
+        security_token <- parse_security_token_response(response)
+        if (is.na(security_token)) {
+          stop(sprintf("Failed to retrieve security token for user '%s'.",
+                       creds$username))
+        }
+        res <- self$POST("_forms/default.aspx?wa=wsignin1.0",
+                         body = security_token)
       }
-      ## Note that httr preserves cookies and settings over multiple requests
-      ## via the handle. Means that if we auth once and retrieve cookies httr
-      ## will automatically send these on subsequent requests if using the same
-      ## handle object
-      security_token <- parse_security_token_response(response)
-      if (is.na(security_token)) {
-        stop(sprintf("Failed to retrieve security token for user '%s'.",
-                     creds$username))
-      }
-      res <- self$POST("_forms/default.aspx?wa=wsignin1.0",
-                       body = security_token)
       validate_cookies(res)
     },
 
@@ -88,6 +111,16 @@ sharepoint_client <- R6::R6Class(
       httr::stop_for_status(r)
       dat <- response_from_json(r)
       httr::add_headers("X-RequestDigest" = dat$FormDigestValue)
+    },
+
+    #' @description
+    #' Return cached authentication information, \emph{without username and
+    #' password}, which can be used to authenticated again.
+    get_auth_data = function() {
+      dat <- httr::cookies(private$handle)
+      serialize(
+        dat[dat$name %in% c("rtFa", "FedAuth"), c("name", "value")],
+        NULL)
     }
   ),
 
