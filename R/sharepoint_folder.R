@@ -110,7 +110,7 @@ sharepoint_folder <- R6::R6Class(
       download(private$client, url, dest, path_show, progress)
     },
 
-    #' @description Upload a fole into a folder
+    #' @description Upload a file into a folder
     #' @param path The name of the path to upload, absolute, or relative to
     #' R's working directory.
     #' @param dest Remote path save downloaded data to, relative to this

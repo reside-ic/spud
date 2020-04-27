@@ -115,7 +115,7 @@ temporary file with the same file extension as \code{path} is used.}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-upload"></a>}}
 \subsection{Method \code{upload()}}{
-Upload a fole into a folder
+Upload a file into a folder
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$upload(path, dest = NULL, progress = FALSE)}\if{html}{\out{</div>}}
 }
