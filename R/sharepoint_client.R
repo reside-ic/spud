@@ -78,6 +78,10 @@ sharepoint_client <- R6::R6Class(
       verb(url, ..., handle = private$handle)
     },
 
+    #' @description
+    #' Get Sharepoint's "Request Digest" security feature.  This method
+    #' sends a request to get the request digest for a given sharepoint
+    #' site, which needs to be used in subsequent \code{POST} requests.
     digest = function(site) {
       url <- sprintf("/sites/%s/_api/contextinfo", site)
       r <- self$POST(url, httr::accept_json())
