@@ -83,14 +83,32 @@ to_time <- function(str) {
 }
 
 
-download <- function(client, url, dest, path, progress) {
+download <- function(client, url, dest, path, progress, overwrite) {
+  dest <- download_dest(dest, path)
   opts <- if (progress) httr::progress() else NULL
-  r <- client$GET(url, opts, httr::write_disk(dest))
+  write <- if (is.raw(dest)) NULL else httr::write_disk(dest, overwrite)
+
+  r <- client$GET(url, opts, write)
   if (httr::status_code(r) == 404) {
-    unlink(dest)
+    if (!is.raw(dest)) {
+      unlink(dest)
+    }
     stop(sprintf("Remote file not found at '%s'", path))
   }
   httr::stop_for_status(r)
+  if (is.raw(dest)) {
+    dest <- httr::content(r, "raw")
+  }
+  dest
+}
+
+
+download_dest <- function(dest, src) {
+  if (is.null(dest)) {
+    dest <- tempfile_inherit_ext(src)
+  } else if (!is.raw(dest)) {
+    assert_scalar_character(dest)
+  }
   dest
 }
 

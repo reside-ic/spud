@@ -88,7 +88,7 @@ test_that("sharepoint_download errors on 404", {
   expect_false(file.exists(t))
 })
 
-test_that("sharepoint_download default save_path inherits file extension", {
+test_that("sharepoint_download default dest inherits file extension", {
 
   ## Mock out authentication steps
   security_token_res <- readRDS("mocks/security_token_response.rds")
