@@ -7,8 +7,9 @@
 sharepoint_download(
   sharepoint_url,
   sharepoint_path,
-  save_path = tempfile_inherit_ext(sharepoint_path),
-  verbose = FALSE
+  dest = NULL,
+  progress = FALSE,
+  overwrite = FALSE
 )
 }
 \arguments{
@@ -26,11 +27,14 @@ in a browser and click menu on the RHS of the file name which appears on
 hover -> Copy link and manually edit to get the file path. See vignette for
 more details.}
 
-\item{save_path}{Path to location you want to save the data. The default
+\item{dest}{Path to location you want to save the data. The default
 save location is a tempfile with the same file extension as the downloaded
 file.}
 
-\item{verbose}{If TRUE then HTTP requests will print verbose output}
+\item{progress}{If \code{TRUE} then HTTP requests will print a progress bar}
+
+\item{overwrite}{if \code{TRUE} then the \code{dest} will be
+ovewritten if it exists (otherwise it an error will be thrown)}
 }
 \value{
 Path to downloaded data

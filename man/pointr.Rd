@@ -42,8 +42,9 @@ Download data from sharepoint
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{pointr$download(
   sharepoint_path,
-  save_path = tempfile_inherit_ext(sharepoint_path),
-  progress = FALSE
+  dest = NULL,
+  progress = FALSE,
+  overwrite = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -52,7 +53,7 @@ Download data from sharepoint
 \describe{
 \item{\code{sharepoint_path}}{Path to the resource within sharepoint}
 
-\item{\code{save_path}}{Path to save downloaded data to}
+\item{\code{dest}}{Path to save downloaded data to}
 
 \item{\code{progress}}{Display a progress bar during download?}
 }

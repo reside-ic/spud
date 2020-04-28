@@ -96,7 +96,12 @@ Create an object referring to a child folder
 \subsection{Method \code{download()}}{
 Download a file from a folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$download(path, dest = NULL, progress = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$download(
+  path,
+  dest = NULL,
+  progress = FALSE,
+  overwrite = FALSE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -105,9 +110,13 @@ Download a file from a folder
 \item{\code{path}}{The name of the path to download, relative to this folder}
 
 \item{\code{dest}}{Path to save downloaded data to. If \code{NULL} then a
-temporary file with the same file extension as \code{path} is used.}
+temporary file with the same file extension as \code{path} is used.
+If code{raw()} (or any other raw value) then the raw bytes will be
+returned.}
 
 \item{\code{progress}}{Display httr's progress bar?}
+
+\item{\code{overwrite}}{Overwrite the file if it exists?}
 }
 \if{html}{\out{</div>}}
 }
