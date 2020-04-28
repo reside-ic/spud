@@ -55,6 +55,15 @@ test_that("Can download raw data", {
 })
 
 
+test_that("Can create a helpful temp name", {
+  client <- mock_download_client()
+  res <- download(client, "/gzip", NULL, "my.zip", FALSE, FALSE)
+  expect_is(res, "character")
+  expect_true(file.exists(res))
+  expect_match(res, "\\.zip$")
+})
+
+
 test_that("Can overwrite", {
   client <- mock_download_client()
   dest <- tempfile()
