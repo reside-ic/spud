@@ -12,19 +12,23 @@
 #' in a browser and click menu on the RHS of the file name which appears on
 #' hover -> Copy link and manually edit to get the file path. See vignette for
 #' more details.
-#' @param save_path Path to location you want to save the data. The default
+#'
+#' @param dest Path to location you want to save the data. The default
 #' save location is a tempfile with the same file extension as the downloaded
 #' file.
-#' @param verbose If TRUE then HTTP requests will print verbose output
+#'
+#' @param progress If \code{TRUE} then HTTP requests will print a progress bar
+#'
+#' @param overwrite if \code{TRUE} then the \code{dest} will be
+#'   ovewritten if it exists (otherwise it an error will be thrown)
 #'
 #' @return Path to downloaded data
 #'
 #' @export
-sharepoint_download <- function(sharepoint_url, sharepoint_path,
-                                save_path = tempfile_inherit_ext(sharepoint_path),
-                                verbose = FALSE) {
+sharepoint_download <- function(sharepoint_url, sharepoint_path, dest = NULL,
+                                progress = FALSE, overwrite = FALSE) {
   pointr <- pointr$new(sharepoint_url)
-  pointr$download(sharepoint_path, save_path, verbose)
+  pointr$download(sharepoint_path, dest, progress, overwrite)
 }
 
 #' Create sharepoint connection for downloading data.
@@ -47,14 +51,13 @@ pointr <- R6::R6Class(
     #' @description
     #' Download data from sharepoint
     #' @param sharepoint_path Path to the resource within sharepoint
-    #' @param save_path Path to save downloaded data to
+    #' @param dest Path to save downloaded data to
     #' @param progress Display a progress bar during download?
     #' @return Path to saved data
-    download = function(sharepoint_path,
-                        save_path = tempfile_inherit_ext(sharepoint_path),
-                        progress = FALSE) {
-      download(private$client, URLencode(sharepoint_path), save_path,
-               sharepoint_path, progress)
+    download = function(sharepoint_path, dest = NULL, progress = FALSE,
+                        overwrite = FALSE) {
+      download(private$client, URLencode(sharepoint_path), dest,
+               sharepoint_path, progress, overwrite)
     },
 
     #' @description

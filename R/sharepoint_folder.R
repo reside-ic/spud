@@ -97,15 +97,18 @@ sharepoint_folder <- R6::R6Class(
     #' @param path The name of the path to download, relative to this folder
     #' @param dest Path to save downloaded data to. If \code{NULL} then a
     #'   temporary file with the same file extension as \code{path} is used.
+    #'   If code{raw()} (or any other raw value) then the raw bytes will be
+    #'   returned.
     #' @param progress Display httr's progress bar?
-    download = function(path, dest = NULL, progress = FALSE) {
+    #' @param overwrite Overwrite the file if it exists?
+    download = function(path, dest = NULL, progress = FALSE,
+                        overwrite = FALSE) {
       url <- sprintf(
         "%s/Files('%s')/$value",
         sharepoint_folder_file_url(private$site, private$path, path),
         URLencode(basename(path)))
-      dest <- dest %||% tempfile_inherit_ext(path)
       path_show <- sprintf("%s:%s/%s", private$site, private$path, path)
-      download(private$client, url, dest, path_show, progress)
+      download(private$client, url, dest, path_show, progress, overwrite)
     },
 
     #' @description Upload a file into a folder
