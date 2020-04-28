@@ -1,3 +1,11 @@
+# pointr 0.1.1
+
+* Downloading files can overwrite existing files (`overwrite = TRUE`) and can return raw bytes rather than files (`dest = raw()`) (reside-159)
+
+# pointr 0.1.0
+
+* New `sharepoint_folder` class for simple operations with files (download, upload, list)
+
 # pointr 0.0.4
 
 * Added a `NEWS.md` file to track changes to the package.
