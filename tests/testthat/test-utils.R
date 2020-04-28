@@ -33,3 +33,16 @@ test_that("tempfile_inherit_ext", {
   tmpf2 <- tempfile_inherit_ext("jibberish")
   expect_equal(tools::file_ext(tmpf2), "")
 })
+
+
+test_that("download filename validation", {
+  expect_equal(download_dest("a.x", "b.y"), "a.x")
+  expect_equal(download_dest(raw(), "b.y"), raw())
+  expect_match(download_dest(NULL, "b.y"), "\\.y$")
+  expect_error(download_dest(1, "b.y"),
+               "'dest' must be a character")
+  expect_error(download_dest(c("a", "b"), "b.y"),
+               "'dest' must be a scalar")
+  expect_error(download_dest(NA_character_, "b.y"),
+               "'dest' must not be NA")
+})
