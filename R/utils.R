@@ -111,3 +111,8 @@ download_dest <- function(dest, src) {
   }
   dest
 }
+
+
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}
