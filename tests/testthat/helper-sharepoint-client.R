@@ -39,6 +39,12 @@ mock_response <- function(status_code = 200L) {
 }
 
 
+mock_download_client <- function() {
+  list(GET = function(url, ...)
+    httr::GET(paste0("https://httpbin.org", url), ...))
+}
+
+
 strip_url <- function(x) {
   gsub("https://[^/]+/sites/[^/]+/", "https://example.com/sites/mysite/", x)
 }

@@ -46,3 +46,31 @@ test_that("download filename validation", {
   expect_error(download_dest(NA_character_, "b.y"),
                "'dest' must not be NA")
 })
+
+
+test_that("Can download raw data", {
+  client <- mock_download_client()
+  res <- download(client, "/gzip", raw(), "my.zip", FALSE, FALSE)
+  expect_is(res, "raw")
+})
+
+
+test_that("Can overwrite", {
+  client <- mock_download_client()
+  dest <- tempfile()
+  file.create(dest)
+  res <- download(client, "/gzip", dest, "my.zip", FALSE, TRUE)
+  expect_true(file.size(dest) > 0)
+  expect_error(
+    download(client, "/gzip", dest, "my.zip", FALSE, FALSE))
+})
+
+
+test_that("Don't write file on 404", {
+  client <- mock_download_client()
+  dest <- tempfile()
+  expect_error(
+    download(client, "/status/404", dest, "my.zip", FALSE, FALSE),
+    "Remote file not found at 'my.zip'")
+  expect_false(file.exists(dest))
+})
