@@ -8,6 +8,15 @@ Create sharepoint connection for downloading data.
 
 Create sharepoint connection for downloading data.
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{client}}{A low-level sharepoint client object, which can be used to interact
+directly with the sharepoint API.  This object mostly handles
+authentication, etc.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -21,13 +30,15 @@ Create sharepoint connection for downloading data.
 \subsection{Method \code{new()}}{
 Create pointr object for downloading data from sharepoint
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{pointr$new(sharepoint_url)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{pointr$new(sharepoint_url, auth = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{sharepoint_url}}{Root URL of sharepoint site to download from}
+
+\item{\code{auth}}{Authentication data passed to the client}
 }
 \if{html}{\out{</div>}}
 }
@@ -56,6 +67,8 @@ Download data from sharepoint
 \item{\code{dest}}{Path to save downloaded data to}
 
 \item{\code{progress}}{Display a progress bar during download?}
+
+\item{\code{overwrite}}{Overwrite existing files?}
 }
 \if{html}{\out{</div>}}
 }

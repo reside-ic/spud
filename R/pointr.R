@@ -39,7 +39,7 @@ pointr <- R6::R6Class(
   cloneable = FALSE,
 
   public = list(
-    #' @description
+    #' @field client
     #' A low-level sharepoint client object, which can be used to interact
     #' directly with the sharepoint API.  This object mostly handles
     #' authentication, etc.
@@ -48,6 +48,7 @@ pointr <- R6::R6Class(
     #' @description
     #' Create pointr object for downloading data from sharepoint
     #' @param sharepoint_url Root URL of sharepoint site to download from
+    #' @param auth Authentication data passed to the client
     #' @return A new `pointr` object
     initialize = function(sharepoint_url, auth = NULL) {
       self$client <- sharepoint_client$new(sharepoint_url, auth)
@@ -58,6 +59,7 @@ pointr <- R6::R6Class(
     #' @param sharepoint_path Path to the resource within sharepoint
     #' @param dest Path to save downloaded data to
     #' @param progress Display a progress bar during download?
+    #' @param overwrite Overwrite existing files?
     #' @return Path to saved data
     download = function(sharepoint_path, dest = NULL, progress = FALSE,
                         overwrite = FALSE) {
