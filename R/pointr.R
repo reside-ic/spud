@@ -40,14 +40,17 @@ pointr <- R6::R6Class(
 
   public = list(
     #' @description
+    #' A low-level sharepoint client object, which can be used to interact
+    #' directly with the sharepoint API.  This object mostly handles
+    #' authentication, etc.
+    client = NULL,
+
+    #' @description
     #' Create pointr object for downloading data from sharepoint
     #' @param sharepoint_url Root URL of sharepoint site to download from
     #' @return A new `pointr` object
     initialize = function(sharepoint_url, auth = NULL) {
-      if (is.character(auth)) {
-        auth <- read_binary(auth)
-      }
-      private$client <- sharepoint_client$new(sharepoint_url, auth)
+      self$client <- sharepoint_client$new(sharepoint_url, auth)
     },
 
     #' @description
@@ -58,7 +61,7 @@ pointr <- R6::R6Class(
     #' @return Path to saved data
     download = function(sharepoint_path, dest = NULL, progress = FALSE,
                         overwrite = FALSE) {
-      download(private$client, URLencode(sharepoint_path), dest,
+      download(self$client, URLencode(sharepoint_path), dest,
                sharepoint_path, progress, overwrite)
     },
 
@@ -77,32 +80,7 @@ pointr <- R6::R6Class(
     #' @param verify Logical, indicating if the site/path combination is
     #' valid (slower but safer).
     folder = function(site, path, verify = FALSE) {
-      sharepoint_folder$new(private$client, site, path, verify)
-    },
-
-    #' @description
-    #' Get the authentication data from the client.  If this is saved
-    #' to a file it provides a way of re-authenticating with a server
-    #' for a limited period (typically between a few days and a few
-    #' weeks) without re-entering the username and password, and may be
-    #' suitable for automated tasks.  Note that unlike proper OAuth-based
-    #' access, there is no way of revoking such access and so the
-    #' authentication data should be treated very carefully.
-    #'
-    #' @param file A file to write the data to. If \code{NULL} the raw data
-    #' is returned directly.
-    get_auth_data = function(file) {
-      dat <- private$client$get_auth_data()
-      if (is.null(file)) {
-        dat
-      } else {
-        writeBin(dat, file)
-        file
-      }
+      sharepoint_folder$new(self$client, site, path, verify)
     }
-  ),
-
-  private = list(
-    client = NULL
   )
 )

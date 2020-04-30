@@ -19,6 +19,7 @@ sharepoint_folder <- R6::R6Class(
 
   public = list(
     initialize = function(client, site, path, verify = FALSE) {
+      stopifnot(inherits(client, "sharepoint_client"))
       private$client <- client
       private$site <- site
       private$path <- path

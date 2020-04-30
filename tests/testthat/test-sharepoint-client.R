@@ -96,29 +96,11 @@ test_that("can validate cookies",  {
 Must provide rtFa and FedAuth cookies, got test, test2", fixed = TRUE)
 })
 
+
+## This is particularly ugly to set, unfortunately
 test_that("can retrieve auth cookies", {
-  ## Mock out sharepoint interactions
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
-  contextinfo_res$cookies <- cookies_res$cookies
-
-  mock_post <- mockery::mock(security_token_res, cookies_res, contextinfo_res)
-  client <- withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post, {
-      sharepoint_client$new("https://httpbin.org")
-    })
-  )
-
-  ## Set cookies somewhat awkwardly as there does not seem to be an
-  ## API to do this in curl directly - it has to come out of the
-  ## request.
-  urls <- sprintf("cookies/set/%s/%s", cookies_res$cookies$name,
-                  cookies_res$cookies$value)
-  for (u in urls) {
-    client$GET(u)
-  }
+  ## Create the client in a way that sets cookies:
+  client <- mock_sharepoint_client("https://httpbin.org", TRUE)
 
   d <- client$get_auth_data()
   expect_is(d, "raw")
@@ -127,17 +109,47 @@ test_that("can retrieve auth cookies", {
   expect_equal(dat$name, c("rtFa", "FedAuth"))
   expect_equal(dat$value, c("example_rtFa", "example_FedAuth"))
 
-  ## Then create a new client, which will call the mock and will
-  ## not read the environment variables
-  client <- withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = NA, "SHAREPOINT_PASS" = NA),
-    with_mock("httr::POST" = mock_post, {
-      sharepoint_client$new("https://httpbin.org", d)
-    }))
-  mockery::expect_called(mock_post, 3)
-  args <- mockery::mock_args(mock_post)[[3]]
+  p <- client$get_auth_data(tempfile())
+  expect_true(file.exists(p))
+  expect_identical(read_binary(p), d)
+})
+
+
+test_that("Can create a client with auth cookies", {
+  dat <- data.frame(name = c("rtFa", "FedAuth"),
+                    value = c("example_rtFa", "example_FedAuth"),
+                    stringsAsFactors = FALSE)
+  auth <- serialize(dat, NULL)
+
+  cookies_res <- readRDS("mocks/cookies_response.rds")
+  mock_post <- mockery::mock(cookies_res)
+
+  client <- with_mock("httr::POST" = mock_post,
+                      sharepoint_client$new("https://httpbin.org", auth))
+
+  mockery::expect_called(mock_post, 1)
+  args <- mockery::mock_args(mock_post)[[1]]
   expect_equal(args[[1]], "https://httpbin.org//_api/contextinfo")
-  expect_equal(
-    args[[3]],
-    httr::config(cookie = "rtFa=example_rtFa; FedAuth=example_FedAuth"))
+  expect_equal(args[[2]], httr::accept_json())
+  expect_equal(args[[3]], auth_to_cookies(auth))
+  expect_equal(args[[4]], r6_private(client)$handle)
+
+  expect_is(r6_private(client)$handle, "handle")
+})
+
+
+test_that("Can read auth data", {
+  dat <- data.frame(name = c("rtFa", "FedAuth"),
+                    value = c("example_rtFa", "example_FedAuth"),
+                    stringsAsFactors = FALSE)
+  auth <- serialize(dat, NULL)
+  str <- paste(dat$name, dat$value, sep = "=", collapse = "; ")
+  expected <- httr::config(cookie = str)
+  tmp <- tempfile()
+  writeBin(auth, tmp)
+
+  expect_equal(auth_to_cookies(auth), expected)
+  expect_equal(auth_to_cookies(tmp), expected)
+  expect_error(auth_to_cookies(NULL))
+  expect_error(auth_to_cookies(tempfile()))
 })
