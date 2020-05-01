@@ -14,6 +14,26 @@ Authenticates using pattern detailed https://paulryan.com.au/2014/spo-remote-aut
 There is a package exists on github for managing lists - not clear whether this will work with downloading any data as package doesn't work with most basic example of retrieveing all available lists
 https://github.com/LukasK13/sharepointr#list-all-available-lists
 
+## Authentication
+
+The authentication mechanism is subject to change.
+
+`pointr` will look for the environment variables `SHAREPOINT_USERNAME` and `SHAREPOINT_PASS` for your credentials and prompt interactively for any missing.
+
+Once authenticated you can save your authentication data to disk for future sessions with:
+
+```
+p$client$get_auth_data(".auth")
+```
+
+(for a pointr object `p` saving to a file `.auth`).  You can then use this by constructing your object as:
+
+```
+p <- pointr::pointr$new(..., auth = ".auth")
+```
+
+Be sure to add this file your `.gitignore` and treat it like a password.
+
 ## Testing
 
 Note there is no end-to-end test in this package that we can authenticate with a real sharepoint server and download data. Can run this manually to download a dataset which should be available to everyone with an Imperial login. Note that when prompted for a username it is name as you use it to login to imperial account e.g. `jbloggs@ic.ac.uk` opposed to your email `j.bloggs@imperial.ac.uk`
