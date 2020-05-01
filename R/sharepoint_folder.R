@@ -94,6 +94,28 @@ sharepoint_folder <- R6::R6Class(
                             file.path(private$path, path), verify)
     },
 
+    #' @description Create a folder on sharepoint
+    #' @param path Directory relative to this folder
+    create = function(path) {
+      url <- sprintf("sites/%s/_api/web/folders", private$site)
+
+      ## We have to use the content type
+      ## "application/json;odata=verbose" here and not plain
+      ## "application/json" otherwise we get a 400 Bad Request error.
+      path_full <- file.path(private$path, path)
+      body <- as.character(jsonlite::toJSON(
+        list("__metadata" = list(type = jsonlite::unbox("SP.Folder")),
+             ServerRelativeUrl = jsonlite::unbox(path_full))))
+      headers <- httr::add_headers(
+        "Content-Type" = "application/json;odata=verbose",
+        "Accept" = "application/json;odata=verbose")
+
+      r <- private$client$POST(url, body = body, headers,
+                               digest = private$site, encode = "raw")
+      httr::stop_for_status(r)
+      invisible(self$folder(path, FALSE))
+    },
+
     #' @description Download a file from a folder
     #' @param path The name of the path to download, relative to this folder
     #' @param dest Path to save downloaded data to. If \code{NULL} then a
@@ -125,9 +147,9 @@ sharepoint_folder <- R6::R6Class(
         "%s/Files/Add(url='%s',overwrite=true)",
         sharepoint_folder_file_url(private$site, private$path, dest),
         URLencode(basename(dest)))
-      digest <- private$client$digest(private$site)
       body <- httr::upload_file(path, "application/octet-stream")
-      r <- private$client$POST(url, body = body, opts, digest)
+      r <- private$client$POST(url, body = body, opts,
+                               digest = private$site)
       httr::stop_for_status(r)
       invisible()
     }

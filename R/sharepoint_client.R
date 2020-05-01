@@ -75,9 +75,17 @@ sharepoint_client <- R6::R6Class(
     #'
     #' @param ... Args passed on to httr
     #'
+    #' @param digest Argument passed through to \code{$digest()} to create
+    #' the response digest; typically a site name
+    #'
     #' @return HTTP response
-    POST = function(...) {
-      self$request(httr::POST, ...)
+    POST = function(..., digest = NULL) {
+      if (!is.null(digest)) {
+        digest <- self$digest(digest)
+        self$request(httr::POST, ..., digest)
+      } else {
+        self$request(httr::POST, ...)
+      }
     },
 
     #' @description
