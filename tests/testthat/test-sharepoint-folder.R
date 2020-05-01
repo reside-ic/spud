@@ -195,3 +195,38 @@ test_that("verify folder exists", {
     mockery::mock_args(mock_get)[[2]][[1]],
     mockery::mock_args(mock_get)[[1]][[1]])
 })
+
+
+test_that("create folder", {
+  p <- mock_pointr()
+
+  contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
+  mock_post <- mockery::mock(contextinfo_res, mock_response(200))
+  tmp <- tempfile()
+  writeLines("content", tmp)
+
+  f1 <- p$folder("site", "a/b/c")
+  res <- with_mock(
+    "httr::POST" = mock_post,
+    withVisible(f1$create("d/e/f")))
+
+  expect_is(res$value, "sharepoint_folder")
+  expect_false(res$visible)
+
+  mockery::expect_called(mock_post, 2)
+  expect_equal(
+    mockery::mock_args(mock_post)[[1]][[1]],
+    "https://httpbin.org//sites/site/_api/contextinfo")
+
+  args <- mockery::mock_args(mock_post)[[2]]
+  expect_equal(args[[1]], "https://httpbin.org/sites/site/_api/web/folders")
+  expect_equal(
+    args[[2]],
+    '{"__metadata":{"type":"SP.Folder"},"ServerRelativeUrl":"a/b/c/d/e/f"}')
+  headers <- httr::add_headers(
+    "Content-Type" = "application/json;odata=verbose",
+    "Accept" = "application/json;odata=verbose")
+  expect_equal(args[[3]], headers)
+  expect_equal(
+    args[[4]], "raw")
+})
