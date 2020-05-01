@@ -5,3 +5,5 @@
 ^buildkite$
 ^docker$
 ^Makefile$
+^scripts$
+^docs$
