@@ -17,6 +17,7 @@ Interact with sharepoint folders and their files.
 \item \href{#method-list}{\code{sharepoint_folder$list()}}
 \item \href{#method-parent}{\code{sharepoint_folder$parent()}}
 \item \href{#method-folder}{\code{sharepoint_folder$folder()}}
+\item \href{#method-create}{\code{sharepoint_folder$create()}}
 \item \href{#method-download}{\code{sharepoint_folder$download()}}
 \item \href{#method-upload}{\code{sharepoint_folder$upload()}}
 }
@@ -87,6 +88,22 @@ Create an object referring to a child folder
 \item{\code{path}}{The name of the folder, relative to this folder}
 
 \item{\code{verify}}{Verify that the folder exists (which it must really here)}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-create"></a>}}
+\subsection{Method \code{create()}}{
+Create a folder on sharepoint
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$create(path)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Directory relative to this folder}
 }
 \if{html}{\out{</div>}}
 }
