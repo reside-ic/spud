@@ -1,3 +1,7 @@
+# pointr 0.1.3
+
+* Support for creating folders (reside-160)
+
 # pointr 0.1.2
 
 * Allow caching of authentication data between sessions by saving cookies to disk (reside-155)
