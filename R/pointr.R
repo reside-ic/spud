@@ -39,13 +39,19 @@ pointr <- R6::R6Class(
   cloneable = FALSE,
 
   public = list(
+    #' @field client
+    #' A low-level sharepoint client object, which can be used to interact
+    #' directly with the sharepoint API.  This object mostly handles
+    #' authentication, etc.
+    client = NULL,
 
     #' @description
     #' Create pointr object for downloading data from sharepoint
     #' @param sharepoint_url Root URL of sharepoint site to download from
+    #' @param auth Authentication data passed to the client
     #' @return A new `pointr` object
-    initialize = function(sharepoint_url) {
-      private$client <- sharepoint_client$new(sharepoint_url)
+    initialize = function(sharepoint_url, auth = NULL) {
+      self$client <- sharepoint_client$new(sharepoint_url, auth)
     },
 
     #' @description
@@ -53,10 +59,11 @@ pointr <- R6::R6Class(
     #' @param sharepoint_path Path to the resource within sharepoint
     #' @param dest Path to save downloaded data to
     #' @param progress Display a progress bar during download?
+    #' @param overwrite Overwrite existing files?
     #' @return Path to saved data
     download = function(sharepoint_path, dest = NULL, progress = FALSE,
                         overwrite = FALSE) {
-      download(private$client, URLencode(sharepoint_path), dest,
+      download(self$client, URLencode(sharepoint_path), dest,
                sharepoint_path, progress, overwrite)
     },
 
@@ -75,11 +82,7 @@ pointr <- R6::R6Class(
     #' @param verify Logical, indicating if the site/path combination is
     #' valid (slower but safer).
     folder = function(site, path, verify = FALSE) {
-      sharepoint_folder$new(private$client, site, path, verify)
+      sharepoint_folder$new(self$client, site, path, verify)
     }
-  ),
-
-  private = list(
-    client = NULL
   )
 )

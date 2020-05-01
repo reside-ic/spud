@@ -3,7 +3,7 @@
 #' @return An authenticated sharepoint client with root url httpbin.org
 #' @keywords internal
 #' @noRd
-mock_sharepoint_client <- function(sharepoint_url) {
+mock_sharepoint_client <- function(sharepoint_url, set_cookies = FALSE) {
   security_token_res <- readRDS("mocks/security_token_response.rds")
   cookies_res <- readRDS("mocks/cookies_response.rds")
   mock_post <- mockery::mock(security_token_res, cookies_res)
@@ -14,6 +14,12 @@ mock_sharepoint_client <- function(sharepoint_url) {
       client <- sharepoint_client$new(sharepoint_url)
     })
   )
+
+  if (set_cookies) {
+    handle <- r6_private(client)$handle
+    set_cookies(handle, cookies_res)
+  }
+
   client
 }
 
@@ -68,4 +74,13 @@ strip_response <- function(r) {
 
 r6_private <- function(x) {
   environment(x$initialize)$private
+}
+
+
+## This is super difficult to because curl does not have a way of
+## setting cookies on a handle.  So we fudge it:
+set_cookies <- function(handle, data) {
+  cookies <- setNames(as.list(data$cookies$value), data$cookies$name)
+  httr::GET("https://httpbin.org/cookies/set", query = cookies,
+            handle = handle)
 }

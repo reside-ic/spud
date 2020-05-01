@@ -1,3 +1,7 @@
+# pointr 0.1.2
+
+* Allow caching of authentication data between sessions by saving cookies to disk (reside-155)
+
 # pointr 0.1.1
 
 * Downloading files can overwrite existing files (`overwrite = TRUE`) and can return raw bytes rather than files (`dest = raw()`) (reside-159)

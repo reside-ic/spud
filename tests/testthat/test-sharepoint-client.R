@@ -95,3 +95,61 @@ test_that("can validate cookies",  {
   "Failed to retrieve all required cookies from URL 'https://httpbin.org/cookies'.
 Must provide rtFa and FedAuth cookies, got test, test2", fixed = TRUE)
 })
+
+
+## This is particularly ugly to set, unfortunately
+test_that("can retrieve auth cookies", {
+  ## Create the client in a way that sets cookies:
+  client <- mock_sharepoint_client("https://httpbin.org", TRUE)
+
+  d <- client$get_auth_data()
+  expect_is(d, "raw")
+  dat <- unserialize(d)
+  expect_is(dat, "data.frame")
+  expect_equal(dat$name, c("rtFa", "FedAuth"))
+  expect_equal(dat$value, c("example_rtFa", "example_FedAuth"))
+
+  p <- client$get_auth_data(tempfile())
+  expect_true(file.exists(p))
+  expect_identical(read_binary(p), d)
+})
+
+
+test_that("Can create a client with auth cookies", {
+  dat <- data.frame(name = c("rtFa", "FedAuth"),
+                    value = c("example_rtFa", "example_FedAuth"),
+                    stringsAsFactors = FALSE)
+  auth <- serialize(dat, NULL)
+
+  cookies_res <- readRDS("mocks/cookies_response.rds")
+  mock_post <- mockery::mock(cookies_res)
+
+  client <- with_mock("httr::POST" = mock_post,
+                      sharepoint_client$new("https://httpbin.org", auth))
+
+  mockery::expect_called(mock_post, 1)
+  args <- mockery::mock_args(mock_post)[[1]]
+  expect_equal(args[[1]], "https://httpbin.org//_api/contextinfo")
+  expect_equal(args[[2]], httr::accept_json())
+  expect_equal(args[[3]], auth_to_cookies(auth))
+  expect_equal(args[[4]], r6_private(client)$handle)
+
+  expect_is(r6_private(client)$handle, "handle")
+})
+
+
+test_that("Can read auth data", {
+  dat <- data.frame(name = c("rtFa", "FedAuth"),
+                    value = c("example_rtFa", "example_FedAuth"),
+                    stringsAsFactors = FALSE)
+  auth <- serialize(dat, NULL)
+  str <- paste(dat$name, dat$value, sep = "=", collapse = "; ")
+  expected <- httr::config(cookie = str)
+  tmp <- tempfile()
+  writeBin(auth, tmp)
+
+  expect_equal(auth_to_cookies(auth), expected)
+  expect_equal(auth_to_cookies(tmp), expected)
+  expect_error(auth_to_cookies(NULL))
+  expect_error(auth_to_cookies(tempfile()))
+})

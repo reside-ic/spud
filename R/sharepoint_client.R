@@ -17,24 +17,39 @@ sharepoint_client <- R6::R6Class(
     #' to retrieve cookies used for subsequent authentication.
     #'
     #' @param sharepoint_url Root URL of sharepoint site to download from
+    #'
+    #' @param auth Authentication data as returned by the
+    #' \code{$get_auth_data()} method
+    #'
     #' @return A new `sharepoint_client` object
-    initialize = function(sharepoint_url) {
+    initialize = function(sharepoint_url, auth = NULL) {
       self$sharepoint_url <- sharepoint_url
-      private$handle <- httr::handle(sharepoint_url)
+      private$handle <- httr::handle(self$sharepoint_url)
+      if (is.null(auth)) {
+        self$login()
+      } else {
+        self$set_auth_data(auth)
+      }
+    },
 
+    #' @description Login to sharepoint with username and password
+    login = function() {
       creds <- get_credentials()
       response <- httr::POST(
         "https://login.microsoftonline.com/extSTS.srf",
         body = prepare_security_token_payload(self$sharepoint_url, creds))
-      ## Not sure if this ever returns a non 200 response but left here to
-      ## be safe. On failed auth it sends a different set of xml but still 200
+      ## Not sure if this ever returns a non 200 response but left
+      ## here to be safe. On failed auth it sends a different set of
+      ## xml but still 200
       if (response$status_code != 200) {
         stop(sprintf("Failed to authenticate user '%s'.", creds$username))
       }
-      ## Note that httr preserves cookies and settings over multiple requests
-      ## via the handle. Means that if we auth once and retrieve cookies httr
-      ## will automatically send these on subsequent requests if using the same
-      ## handle object
+      ## Note that httr preserves cookies and settings over multiple
+      ## requests via the handle. Means that if we auth once and
+      ## retrieve cookies httr will automatically send these on
+      ## subsequent requests if using the same handle object
+      ##
+      ## These tokens last for ~24h
       security_token <- parse_security_token_response(response)
       if (is.na(security_token)) {
         stop(sprintf("Failed to retrieve security token for user '%s'.",
@@ -88,6 +103,37 @@ sharepoint_client <- R6::R6Class(
       httr::stop_for_status(r)
       dat <- response_from_json(r)
       httr::add_headers("X-RequestDigest" = dat$FormDigestValue)
+    },
+
+    #' @description
+    #' Get the authentication data from the client.  If this is saved
+    #' to a file it provides a way of re-authenticating with a server
+    #' for a limited period (typically between a few days and a few
+    #' weeks) without re-entering the username and password, and may be
+    #' suitable for automated tasks.  Note that unlike proper OAuth-based
+    #' access, there is no way of revoking such access and so the
+    #' authentication data should be treated very carefully.
+    #'
+    #' @param file A file to write the data to. If \code{NULL} the raw data
+    #' is returned directly.
+    get_auth_data = function(file = NULL) {
+      dat <- httr::cookies(private$handle)
+      d <- serialize(
+        dat[dat$name %in% c("rtFa", "FedAuth"), c("name", "value")],
+        NULL)
+      if (is.null(file)) {
+        d
+      } else {
+        writeBin(d, file)
+        file
+      }
+    },
+
+    set_auth_data = function(auth) {
+      cookies <- auth_to_cookies(auth)
+      res <- self$POST("/_api/contextinfo", httr::accept_json(), cookies)
+      httr::stop_for_status(res)
+      validate_cookies(res)
     }
   ),
 
@@ -148,4 +194,16 @@ Must provide rtFa and FedAuth cookies, got %s",
                  paste(cookies$name, collapse = ", ")))
   }
   invisible(TRUE)
+}
+
+
+auth_to_cookies <- function(auth) {
+  if (is.character(auth)) {
+    stopifnot(file.exists(auth))
+    auth <- read_binary(auth)
+  }
+  stopifnot(is.raw(auth))
+  auth <- unserialize(auth)
+  string <- paste(auth$name, auth$value, sep = "=", collapse = "; ")
+  httr::config(cookie = string)
 }
