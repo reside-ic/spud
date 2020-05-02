@@ -14,7 +14,7 @@ LazyData: true
 Suggests: 
     mockery,
     testthat,
-    tibble,
+    tibble (>= 3.0.0),
     withr
 Imports: 
     getPass,
