@@ -91,3 +91,9 @@ test_that("Don't write file on 404", {
     "Remote file not found at 'my.zip'")
   expect_false(file.exists(dest))
 })
+
+
+test_that("file_path2", {
+  expect_equal(file_path2("a/b", NULL), "a/b")
+  expect_equal(file_path2("a/b", "c"), "a/b/c")
+})
