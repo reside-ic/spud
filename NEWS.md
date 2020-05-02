@@ -1,3 +1,7 @@
+# pointr 0.1.4
+
+* Support for listing subdirectories (reside-161)
+
 # pointr 0.1.3
 
 * Support for creating folders (reside-160)

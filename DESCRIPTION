@@ -1,6 +1,6 @@
 Package: pointr
 Title: Enables downloading of data from sharepoint
-Version: 0.1.3
+Version: 0.1.4
 Authors@R: c(person("Robert", "Ashton", role = c("aut", "cre"),
                     email = "r.ashton@imperial.ac.uk"),
              person("Rich", "FitzJohn", role = "aut"),
