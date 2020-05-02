@@ -35,10 +35,10 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all files within the folder
-    files = function() {
+    files = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/files",
-        private$site, URLencode(private$path))
+        private$site, URLencode(file_path2(private$path, path)))
       r <- private$client$GET(url)
       httr::stop_for_status(r)
       dat <- response_from_json(r)
@@ -52,10 +52,10 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all folders within the folder
-    folders = function() {
+    folders = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/folders",
-        private$site, URLencode(private$path))
+        private$site, URLencode(file_path2(private$path, path)))
       r <- private$client$GET(url)
       httr::stop_for_status(r)
       dat <- response_from_json(r)
@@ -68,9 +68,9 @@ sharepoint_folder <- R6::R6Class(
 
     #' @description List all folders and files within the folder; this is a
     #' convenience wrapper around the \code{files} and \code{folders} methods.
-    list = function() {
-      folders <- self$folders()
-      files <- self$files()
+    list = function(path = NULL) {
+      folders <- self$folders(path)
+      files <- self$files(path)
       folders$size <- rep(NA_real_, nrow(folders))
       folders$is_folder <- TRUE
       files$items <- rep(NA_integer_, nrow(files))

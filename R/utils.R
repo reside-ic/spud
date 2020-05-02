@@ -121,3 +121,8 @@ download_dest <- function(dest, src) {
 read_binary <- function(path) {
   readBin(path, raw(), file.size(path))
 }
+
+
+file_path2 <- function(a, b) {
+  if (is.null(b)) a else file.path(a, b)
+}
