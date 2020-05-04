@@ -6,12 +6,24 @@ test_that("list files", {
   expect_is(folder, "sharepoint_folder")
 
   folder_files_res <- readRDS("mocks/folder_files_response.rds")
-  mock_get <- mockery::mock(folder_files_res)
+  mock_get <- mockery::mock(folder_files_res, cycle = TRUE)
   dat <- with_mock("httr::GET" = mock_get,
                    folder$files())
   expect_is(dat, "tbl_df")
   expect_equal(names(dat), c("name", "size", "created", "modified"))
   expect_equal(dat$name, c("clipboard.txt", "test.txt"))
+
+  expect_identical(with_mock("httr::GET" = mock_get, folder$files("a/b/c")),
+                   dat)
+
+  expect_equal(
+    mockery::mock_args(mock_get)[[1]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('path')/files"))
+  expect_equal(
+    mockery::mock_args(mock_get)[[2]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('path/a/b/c')/files"))
 })
 
 
@@ -21,12 +33,24 @@ test_that("list folders", {
   expect_is(folder, "sharepoint_folder")
 
   folder_folder_res <- readRDS("mocks/folder_folders_response.rds")
-  mock_get <- mockery::mock(folder_folder_res)
+  mock_get <- mockery::mock(folder_folder_res, cycle = TRUE)
   dat <- with_mock("httr::GET" = mock_get,
                    folder$folders())
   expect_is(dat, "tbl_df")
   expect_equal(names(dat), c("name", "items", "created", "modified"))
   expect_equal(dat$name, c("data_offers", "administration_station"))
+
+  expect_identical(with_mock("httr::GET" = mock_get, folder$folders("a/b/c")),
+                   dat)
+
+  expect_equal(
+    mockery::mock_args(mock_get)[[1]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('path')/folders"))
+  expect_equal(
+    mockery::mock_args(mock_get)[[2]][[1]],
+    paste0("https://httpbin.org//sites/site/_api/web/",
+           "GetFolderByServerRelativeURL('path/a/b/c')/folders"))
 })
 
 
