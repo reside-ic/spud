@@ -34,6 +34,10 @@ p <- pointr::pointr$new(..., auth = ".auth")
 
 Be sure to add this file your `.gitignore` and treat it like a password.
 
+### MFA
+
+If using multi-factor authentication then the above approach won't work. You need to generate an app password and enter this when prompted for your password. See [microsoft docs](https://docs.microsoft.com/en-gb/azure/active-directory/user-help/multi-factor-authentication-end-user-app-passwords) for details on how to generate an app password.
+
 ## Testing
 
 Note there is no end-to-end test in this package that we can authenticate with a real sharepoint server and download data. Can run this manually to download a dataset which should be available to everyone with an Imperial login. Note that when prompted for a username it is name as you use it to login to imperial account e.g. `jbloggs@ic.ac.uk` opposed to your email `j.bloggs@imperial.ac.uk`
