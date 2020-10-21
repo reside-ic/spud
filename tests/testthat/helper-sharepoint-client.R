@@ -24,7 +24,7 @@ mock_sharepoint_client <- function(sharepoint_url, set_cookies = FALSE) {
 }
 
 
-mock_pointr <- function(sharepoint_url) {
+mock_sharepoint <- function(sharepoint_url) {
   security_token_res <- readRDS("mocks/security_token_response.rds")
   cookies_res <- readRDS("mocks/cookies_response.rds")
   mock_post <- mockery::mock(security_token_res, cookies_res)
@@ -32,7 +32,7 @@ mock_pointr <- function(sharepoint_url) {
   withr::with_envvar(
     c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
     with_mock("httr::POST" = mock_post, {
-      pointr$new("https://httpbin.org")
+      sharepoint$new("https://httpbin.org")
     })
   )
 }

@@ -1,4 +1,4 @@
-context("pointr")
+context("spud")
 
 test_that("sharepoint_download saves data to disk", {
   ## Mock out authentication steps

@@ -49,8 +49,8 @@ assert_nonmissing <- function(x, name = deparse(substitute(x))) {
   }
 }
 
-pointr_file <- function(...) {
-  system.file(..., package = "pointr", mustWork = TRUE)
+spud_file <- function(...) {
+  system.file(..., package = "spud", mustWork = TRUE)
 }
 
 tempfile_inherit_ext <- function(file) {

@@ -1,12 +1,12 @@
-Package: pointr
-Title: Enables downloading of data from sharepoint
-Version: 0.1.4
+Package: spud
+Title: Sharepoint upload & download
+Version: 0.1.5
 Authors@R: c(person("Robert", "Ashton", role = c("aut", "cre"),
                     email = "r.ashton@imperial.ac.uk"),
              person("Rich", "FitzJohn", role = "aut"),
              person("Imperial College of Science, Technology and Medicine",
                     role = "cph"))
-Description: Enables downloading of data from sharepoint.
+Description: Enables uploading, downloading and listing of files in sharepoint.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -24,4 +24,4 @@ Imports:
     tools,
     xml2
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1

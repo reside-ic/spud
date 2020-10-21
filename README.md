@@ -1,11 +1,11 @@
 <!-- badges: start -->
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
-[![Build status](https://badge.buildkite.com/2f80635022481989da55f4be29951a8f0902eedea92956761e.svg)](https://buildkite.com/mrc-ide/pointr)
-[![Travis build status](https://travis-ci.com/reside-ic/pointr.svg?branch=master)](https://travis-ci.com/reside-ic/pointr)
-[![codecov.io](https://codecov.io/github/reside-ic/pointr/coverage.svg?branch=master)](https://codecov.io/github/reside-ic/pointr?branch=master)
+[![Build status](https://badge.buildkite.com/2f80635022481989da55f4be29951a8f0902eedea92956761e.svg)](https://buildkite.com/mrc-ide/spud)
+[![Travis build status](https://travis-ci.com/reside-ic/spud.svg?branch=master)](https://travis-ci.com/reside-ic/spud)
+[![codecov.io](https://codecov.io/github/reside-ic/spud/coverage.svg?branch=master)](https://codecov.io/github/reside-ic/spud?branch=master)
 <!-- badges: end -->
 
-# pointr
+# spud
 
 Package to enable programmatic downloading of data from sharepoint.
 
@@ -18,7 +18,7 @@ https://github.com/LukasK13/sharepointr#list-all-available-lists
 
 The authentication mechanism is subject to change.
 
-`pointr` will look for the environment variables `SHAREPOINT_USERNAME` and `SHAREPOINT_PASS` for your credentials and prompt interactively for any missing.
+`spud` will look for the environment variables `SHAREPOINT_USERNAME` and `SHAREPOINT_PASS` for your credentials and prompt interactively for any missing.
 
 Once authenticated you can save your authentication data to disk for future sessions with:
 
@@ -26,10 +26,10 @@ Once authenticated you can save your authentication data to disk for future sess
 p$client$get_auth_data(".auth")
 ```
 
-(for a pointr object `p` saving to a file `.auth`).  You can then use this by constructing your object as:
+(for a spud object `p` saving to a file `.auth`).  You can then use this by constructing your object as:
 
 ```
-p <- pointr::pointr$new(..., auth = ".auth")
+p <- spud::spud$new(..., auth = ".auth")
 ```
 
 Be sure to add this file your `.gitignore` and treat it like a password.
@@ -48,7 +48,7 @@ sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents
 
 ### TODO
 
-* Caching for `sharepoint_download` function. Probably a kv store of sharepoint URL + user to `pointr` or `sharepoint_client` object
+* Caching for `sharepoint_download` function. Probably a kv store of sharepoint URL + user to `spud` or `sharepoint_client` object
 * Allow more formats of the resource URL - at the moment users need to do some manual formatting to put this into the correct formatting hopefully we can support
    * Copy from url when previewing document
    * The "copy link" button for a resource

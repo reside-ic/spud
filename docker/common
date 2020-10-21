@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 PACKAGE_ROOT=$(realpath $HERE/..)
-PACKAGE_NAME=pointr
+PACKAGE_NAME=spud
 PACKAGE_ORG=reside
 
 if [ "$BUILDKITE" = "true" ]; then

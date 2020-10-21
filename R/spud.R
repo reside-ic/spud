@@ -27,15 +27,15 @@
 #' @export
 sharepoint_download <- function(sharepoint_url, sharepoint_path, dest = NULL,
                                 progress = FALSE, overwrite = FALSE) {
-  pointr <- pointr$new(sharepoint_url)
-  pointr$download(sharepoint_path, dest, progress, overwrite)
+  sp <- sharepoint$new(sharepoint_url)
+  sp$download(sharepoint_path, dest, progress, overwrite)
 }
 
 #' Create sharepoint connection for downloading data.
 #'
 #' @export
-pointr <- R6::R6Class(
-  "pointr",
+sharepoint <- R6::R6Class(
+  "sharepoint",
   cloneable = FALSE,
 
   public = list(
@@ -46,10 +46,10 @@ pointr <- R6::R6Class(
     client = NULL,
 
     #' @description
-    #' Create pointr object for downloading data from sharepoint
+    #' Create sharepoint object for downloading data from sharepoint
     #' @param sharepoint_url Root URL of sharepoint site to download from
     #' @param auth Authentication data passed to the client
-    #' @return A new `pointr` object
+    #' @return A new `sharepoint` object
     initialize = function(sharepoint_url, auth = NULL) {
       self$client <- sharepoint_client$new(sharepoint_url, auth)
     },

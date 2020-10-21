@@ -24,42 +24,88 @@ Interact with sharepoint folders and their files.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Create sharepoint_folder object to enable listing, creating
+downloading and uploading files & folders
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$new(client, site, path, verify = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{client}}{A low-level sharepoint client object, which can be used to
+interact directly with the sharepoint API.}
+
+\item{\code{site}}{The name of the sharepoint site (most likely a short string)}
+
+\item{\code{path}}{Relative path within that shared site.  It seems
+that "Shared Documents" is a common path that most likely
+represents a "Documents" collection when viewed in the
+sharepoint web interface.}
+
+\item{\code{verify}}{Logical, indicating if the site/path combination is
+valid (slower but safer).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-files"></a>}}
+\if{latex}{\out{\hypertarget{method-files}{}}}
 \subsection{Method \code{files()}}{
 List all files within the folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$files()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$files(path = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Directory relative to this folder, uses this folder if NULL}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-folders"></a>}}
+\if{latex}{\out{\hypertarget{method-folders}{}}}
 \subsection{Method \code{folders()}}{
 List all folders within the folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$folders()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$folders(path = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Directory relative to this folder, uses this folder if NULL}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-list"></a>}}
+\if{latex}{\out{\hypertarget{method-list}{}}}
 \subsection{Method \code{list()}}{
 List all folders and files within the folder; this is a
 convenience wrapper around the \code{files} and \code{folders} methods.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$list()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$list(path = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Directory relative to this folder, uses this folder if NULL}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-parent"></a>}}
+\if{latex}{\out{\hypertarget{method-parent}{}}}
 \subsection{Method \code{parent()}}{
 Create an object referring to the parent folder
 \subsection{Usage}{
@@ -76,6 +122,7 @@ Create an object referring to the parent folder
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-folder"></a>}}
+\if{latex}{\out{\hypertarget{method-folder}{}}}
 \subsection{Method \code{folder()}}{
 Create an object referring to a child folder
 \subsection{Usage}{
@@ -94,6 +141,7 @@ Create an object referring to a child folder
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-create"></a>}}
+\if{latex}{\out{\hypertarget{method-create}{}}}
 \subsection{Method \code{create()}}{
 Create a folder on sharepoint
 \subsection{Usage}{
@@ -110,6 +158,7 @@ Create a folder on sharepoint
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-download"></a>}}
+\if{latex}{\out{\hypertarget{method-download}{}}}
 \subsection{Method \code{download()}}{
 Download a file from a folder
 \subsection{Usage}{
@@ -140,6 +189,7 @@ returned.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-upload"></a>}}
+\if{latex}{\out{\hypertarget{method-upload}{}}}
 \subsection{Method \code{upload()}}{
 Upload a file into a folder
 \subsection{Usage}{

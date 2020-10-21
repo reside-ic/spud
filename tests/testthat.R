@@ -1,4 +1,4 @@
 library(testthat)
-library(pointr)
+library(spud)
 
-test_check("pointr")
+test_check("spud")

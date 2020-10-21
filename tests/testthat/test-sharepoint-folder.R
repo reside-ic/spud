@@ -1,7 +1,7 @@
 context("sharepoint_folder")
 
 test_that("list files", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "path")
   expect_is(folder, "sharepoint_folder")
 
@@ -28,7 +28,7 @@ test_that("list files", {
 
 
 test_that("list folders", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "path")
   expect_is(folder, "sharepoint_folder")
 
@@ -55,7 +55,7 @@ test_that("list folders", {
 
 
 test_that("list everything", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "path")
   expect_is(folder, "sharepoint_folder")
 
@@ -73,7 +73,7 @@ test_that("list everything", {
 
 
 test_that("get parent directory", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "a/b/c")
   parent <- folder$parent()
   expect_equal(r6_private(parent)$path, "a/b")
@@ -82,7 +82,7 @@ test_that("get parent directory", {
 
 
 test_that("get child directory", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "a")
   child <- folder$folder("b")$folder("c")
   expect_is(folder, "sharepoint_folder")
@@ -91,7 +91,7 @@ test_that("get child directory", {
 
 
 test_that("download from folder", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "a/b/c")
 
   mock_get <- mockery::mock(mock_response())
@@ -109,7 +109,7 @@ test_that("download from folder", {
 
 
 test_that("download from subdirectory", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "a/b")
 
   mock_get <- mockery::mock(mock_response())
@@ -127,7 +127,7 @@ test_that("download from subdirectory", {
 
 
 test_that("download from folder fails with informative message if missing", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "a/b/c")
 
   mock_get <- mockery::mock(mock_response(404))
@@ -144,7 +144,7 @@ test_that("download from folder fails with informative message if missing", {
 
 
 test_that("upload", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "a/b/c")
 
   contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
@@ -171,7 +171,7 @@ test_that("upload", {
 
 
 test_that("upload to subdirectory", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   folder <- p$folder("site", "a/b")
 
   contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
@@ -198,7 +198,7 @@ test_that("upload to subdirectory", {
 
 
 test_that("verify folder exists", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
   mock_get <- mockery::mock(mock_response(200), mock_response(404))
 
   expect_is(
@@ -222,7 +222,7 @@ test_that("verify folder exists", {
 
 
 test_that("create folder", {
-  p <- mock_pointr()
+  p <- mock_sharepoint()
 
   contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
   mock_post <- mockery::mock(contextinfo_res, mock_response(200))
