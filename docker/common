@@ -8,7 +8,7 @@ if [ "$BUILDKITE" = "true" ]; then
 else
     GIT_SHA=$(git -C "$PACKAGE_ROOT" rev-parse --short=7 HEAD)
 fi
-PKG_VERSION=$(cat $PACKAGE_ROOT/DESCRIPTION | grep '^Version:' | sed 's/^.*: *//')
+PKG_VERSION=$(grep '^Version:' $PACKAGE_ROOT/DESCRIPTION | sed 's/^.*: *//')
 
 if [ "$TRAVIS" = "true" ]; then
     GIT_BRANCH=$TRAVIS_BRANCH
