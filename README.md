@@ -26,10 +26,10 @@ Once authenticated you can save your authentication data to disk for future sess
 p$client$get_auth_data(".auth")
 ```
 
-(for a spud object `p` saving to a file `.auth`).  You can then use this by constructing your object as:
+(for a sharepoint object `p` saving to a file `.auth`).  You can then use this by constructing your object as:
 
 ```
-p <- spud::spud$new(..., auth = ".auth")
+p <- spud::sharepoint$new(..., auth = ".auth")
 ```
 
 Be sure to add this file your `.gitignore` and treat it like a password.
