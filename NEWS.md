@@ -1,3 +1,7 @@
+# spud 0.1.5
+
+* Rename package to spud (Sharepoint upload & delete) (reside-191)
+
 # pointr 0.1.4
 
 * Support for listing subdirectories (reside-161)

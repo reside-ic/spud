@@ -18,6 +18,17 @@ sharepoint_folder <- R6::R6Class(
   ),
 
   public = list(
+    #' @description Create sharepoint_folder object to enable listing, creating
+    #' downloading and uploading files & folders
+    #' @param client A low-level sharepoint client object, which can be used to
+    #' interact directly with the sharepoint API.
+    #' @param site The name of the sharepoint site (most likely a short string)
+    #' @param path Relative path within that shared site.  It seems
+    #' that "Shared Documents" is a common path that most likely
+    #' represents a "Documents" collection when viewed in the
+    #' sharepoint web interface.
+    #' @param verify Logical, indicating if the site/path combination is
+    #' valid (slower but safer).
     initialize = function(client, site, path, verify = FALSE) {
       stopifnot(inherits(client, "sharepoint_client"))
       private$client <- client
@@ -35,6 +46,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all files within the folder
+    #' @param path Directory relative to this folder, uses this folder if NULL
     files = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/files",
@@ -52,6 +64,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all folders within the folder
+    #' @param path Directory relative to this folder, uses this folder if NULL
     folders = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/folders",
@@ -68,6 +81,7 @@ sharepoint_folder <- R6::R6Class(
 
     #' @description List all folders and files within the folder; this is a
     #' convenience wrapper around the \code{files} and \code{folders} methods.
+    #' @param path Directory relative to this folder, uses this folder if NULL
     list = function(path = NULL) {
       folders <- self$folders(path)
       files <- self$files(path)

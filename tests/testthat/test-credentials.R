@@ -5,7 +5,7 @@ test_that("can get user auth credentials", {
   withr::with_envvar(
     c("SHAREPOINT_USERNAME" = NA, "SHAREPOINT_PASS" = NA),
     with_mock("getPass::getPass" = mock_read_cred,
-              "pointr:::get_string" = mock_read_cred, {
+              "spud:::get_string" = mock_read_cred, {
       creds <- get_credentials()
     })
   )
@@ -15,7 +15,7 @@ test_that("can get user auth credentials", {
   withr::with_envvar(
     c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = NA),
     with_mock("getPass::getPass" = mock_read_cred,
-              "pointr:::get_string" = mock_read_cred, {
+              "spud:::get_string" = mock_read_cred, {
       creds <- get_credentials()
     })
   )
@@ -25,7 +25,7 @@ test_that("can get user auth credentials", {
   withr::with_envvar(
     c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
     with_mock("getPass::getPass" = mock_read_cred,
-              "pointr:::get_string" = mock_read_cred, {
+              "spud:::get_string" = mock_read_cred, {
       creds <- get_credentials()
     })
   )

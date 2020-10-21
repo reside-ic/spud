@@ -159,7 +159,7 @@ sharepoint_client <- R6::R6Class(
 #' @keywords internal
 #' @noRd
 prepare_security_token_payload <- function(url, credentials) {
-  payload <- paste(readLines(pointr_file("security_token_request.xml")),
+  payload <- paste(readLines(spud_file("security_token_request.xml")),
                    collapse = "\n")
   glue::glue(payload, root_url = url,
              username = credentials$username,
