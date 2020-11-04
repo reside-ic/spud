@@ -12,12 +12,16 @@ sharepoint_folder <- R6::R6Class(
   cloneable = FALSE,
 
   private = list(
-    client = NULL,
-    site = NULL,
-    path = NULL
+    client = NULL
   ),
 
   public = list(
+    #' @field site Name of the sharepoint site (readonly)
+    site = NULL,
+
+    #' @field path Path of the folder (readonly)
+    path = NULL,
+
     #' @description Create sharepoint_folder object to enable listing, creating
     #' downloading and uploading files & folders
     #' @param client A low-level sharepoint client object, which can be used to
@@ -32,8 +36,8 @@ sharepoint_folder <- R6::R6Class(
     initialize = function(client, site, path, verify = FALSE) {
       stopifnot(inherits(client, "sharepoint_client"))
       private$client <- client
-      private$site <- site
-      private$path <- path
+      self$site <- site
+      self$path <- path
 
       if (verify) {
         r <- private$client$GET(sharepoint_folder_url(site, path))
@@ -43,6 +47,9 @@ sharepoint_folder <- R6::R6Class(
         }
         httr::stop_for_status(r)
       }
+
+      lockBinding("site", self)
+      lockBinding("path", self)
     },
 
     #' @description List all files within the folder
@@ -50,7 +57,7 @@ sharepoint_folder <- R6::R6Class(
     files = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/files",
-        private$site, URLencode(file_path2(private$path, path)))
+        self$site, URLencode(file_path2(self$path, path)))
       r <- private$client$GET(url)
       httr::stop_for_status(r)
       dat <- response_from_json(r)
@@ -68,7 +75,7 @@ sharepoint_folder <- R6::R6Class(
     folders = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/folders",
-        private$site, URLencode(file_path2(private$path, path)))
+        self$site, URLencode(file_path2(self$path, path)))
       r <- private$client$GET(url)
       httr::stop_for_status(r)
       dat <- response_from_json(r)
@@ -115,10 +122,10 @@ sharepoint_folder <- R6::R6Class(
       }
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/recycle()",
-        private$site, URLencode(file_path2(private$path, path)))
+        self$site, URLencode(file_path2(self$path, path)))
       headers <- httr::add_headers(
         "If-Match" = "{etag or *}")
-      r <- private$client$DELETE(url, headers, digest = private$site)
+      r <- private$client$DELETE(url, headers, digest = self$site)
       httr::stop_for_status(r)
       invisible()
     },
@@ -126,27 +133,27 @@ sharepoint_folder <- R6::R6Class(
     #' @description Create an object referring to the parent folder
     #' @param verify Verify that the folder exists (which it must really here)
     parent = function(verify = FALSE) {
-      sharepoint_folder$new(private$client, private$site,
-                            dirname(private$path), verify)
+      sharepoint_folder$new(private$client, self$site,
+                            dirname(self$path), verify)
     },
 
     #' @description Create an object referring to a child folder
     #' @param path The name of the folder, relative to this folder
     #' @param verify Verify that the folder exists (which it must really here)
     folder = function(path, verify = FALSE) {
-      sharepoint_folder$new(private$client, private$site,
-                            file.path(private$path, path), verify)
+      sharepoint_folder$new(private$client, self$site,
+                            file.path(self$path, path), verify)
     },
 
     #' @description Create a folder on sharepoint
     #' @param path Folder relative to this folder
     create = function(path) {
-      url <- sprintf("sites/%s/_api/web/folders", private$site)
+      url <- sprintf("sites/%s/_api/web/folders", self$site)
 
       ## We have to use the content type
       ## "application/json;odata=verbose" here and not plain
       ## "application/json" otherwise we get a 400 Bad Request error.
-      path_full <- file.path(private$path, path)
+      path_full <- file.path(self$path, path)
       body <- as.character(jsonlite::toJSON(
         list("__metadata" = list(type = jsonlite::unbox("SP.Folder")),
              ServerRelativeUrl = jsonlite::unbox(path_full))))
@@ -155,7 +162,7 @@ sharepoint_folder <- R6::R6Class(
         "Accept" = "application/json;odata=verbose")
 
       r <- private$client$POST(url, body = body, headers,
-                               digest = private$site, encode = "raw")
+                               digest = self$site, encode = "raw")
       httr::stop_for_status(r)
       invisible(self$folder(path, FALSE))
     },
@@ -172,9 +179,9 @@ sharepoint_folder <- R6::R6Class(
                         overwrite = FALSE) {
       url <- sprintf(
         "%s/Files('%s')/$value",
-        sharepoint_folder_file_url(private$site, private$path, path),
+        sharepoint_folder_file_url(self$site, self$path, path),
         URLencode(basename(path)))
-      path_show <- sprintf("%s:%s/%s", private$site, private$path, path)
+      path_show <- sprintf("%s:%s/%s", self$site, self$path, path)
       download(private$client, url, dest, path_show, progress, overwrite)
     },
 
@@ -189,11 +196,11 @@ sharepoint_folder <- R6::R6Class(
       dest <- dest %||% basename(path)
       url <- sprintf(
         "%s/Files/Add(url='%s',overwrite=true)",
-        sharepoint_folder_file_url(private$site, private$path, dest),
+        sharepoint_folder_file_url(self$site, self$path, dest),
         URLencode(basename(dest)))
       body <- httr::upload_file(path, "application/octet-stream")
       r <- private$client$POST(url, body = body, opts,
-                               digest = private$site)
+                               digest = self$site)
       httr::stop_for_status(r)
       invisible()
     }

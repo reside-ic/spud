@@ -1,6 +1,6 @@
 Package: spud
 Title: Sharepoint upload & download
-Version: 0.1.6
+Version: 0.1.7
 Authors@R: c(person("Robert", "Ashton", role = c("aut", "cre"),
                     email = "r.ashton@imperial.ac.uk"),
              person("Rich", "FitzJohn", role = "aut"),

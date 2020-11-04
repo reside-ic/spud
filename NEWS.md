@@ -1,3 +1,7 @@
+# spud 0.1.7
+
+* Folders now expose a public readonly field `site` and `path` (reside-200)
+
 # spud 0.1.6
 
 * Add a delete method to folders (reside-205)

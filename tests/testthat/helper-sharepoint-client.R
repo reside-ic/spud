@@ -84,3 +84,26 @@ set_cookies <- function(handle, data) {
   httr::GET("https://httpbin.org/cookies/set", query = cookies,
             handle = handle)
 }
+
+integration_test_client <- function() {
+  v <- c("username", "password", "host", "site", "root")
+  dat <- Sys.getenv(paste0("SPUD_TEST_SHAREPOINT_", toupper(v)), NA_character_)
+
+  if (any(is.na(dat))) {
+    testthat::skip(c(
+      "Environment variables not defined for integration tests:",
+      paste0(" - ", names(dat)[is.na(dat)])))
+  }
+  names(dat) <- v
+
+  ## This needs tidying up: RESIDE-162
+  client <- withr::with_envvar(c(
+    SHAREPOINT_USERNAME = dat[["username"]],
+    SHAREPOINT_PASS = dat[["password"]]),
+    sharepoint$new(dat[["host"]]))
+  root <- client$folder(dat[["site"]], dat[["root"]], verify = TRUE)
+  tmp <- basename(tempfile("test_"))
+  folder <- root$create(tmp)
+
+  list(folder = folder, client = client)
+}

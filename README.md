@@ -38,21 +38,20 @@ Be sure to add this file your `.gitignore` and treat it like a password.
 
 If using multi-factor authentication then the above approach won't work. You need to generate an app password and enter this when prompted for your password. See [microsoft docs](https://docs.microsoft.com/en-gb/azure/active-directory/user-help/multi-factor-authentication-end-user-app-passwords) for details on how to generate an app password.
 
-## Testing
+## Tests
 
-Note there is no end-to-end test in this package that we can authenticate with a real sharepoint server and download data. Can run this manually to download a dataset which should be available to everyone with an Imperial login. Note that when prompted for a username it is name as you use it to login to imperial account e.g. `jbloggs@ic.ac.uk` opposed to your email `j.bloggs@imperial.ac.uk`
+Most of the tests make heavy use of mocks, so if the API changes we might not catch breaking changes. In order to hedge against this we run a small number of integration tests against sharepoint. To opt into running these tests you need to define some environment variables:
 
 ```
-sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents/Document.docx", tempfile(fileext = ".docx"))
+SPUD_TEST_SHAREPOINT_USERNAME=you@example.com
+SPUD_TEST_SHAREPOINT_PASSWORD=s3cret!
+SPUD_TEST_SHAREPOINT_HOST=https://example.sharepoint.com
+SPUD_TEST_SHAREPOINT_SITE=yoursite
+SPUD_TEST_SHAREPOINT_ROOT=path/on/your/site
 ```
 
-### TODO
+This will create a new directory on your sharepoint site below the path given at `SPUD_TEST_SHAREPOINT_ROOT`, one per time the test suite is run, and it will add, list, remove files that are there.
 
-* Caching for `sharepoint_download` function. Probably a kv store of sharepoint URL + user to `spud` or `sharepoint_client` object
-* Allow more formats of the resource URL - at the moment users need to do some manual formatting to put this into the correct formatting hopefully we can support
-   * Copy from url when previewing document
-   * The "copy link" button for a resource
-   * Manually building path from sites and the document list
-* Error handling - do we want to do some better error handling here if any of the requests fail? e.g. particularly bad if downloading a resource which doesn't exist
-* Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks.
-* Vignette - write one!
+## License
+
+MIT © Imperial College of Science, Technology and Medicine
