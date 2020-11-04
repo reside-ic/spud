@@ -254,3 +254,70 @@ test_that("create folder", {
   expect_equal(
     args[[4]], "raw")
 })
+
+
+test_that("delete folder", {
+  p <- mock_sharepoint()
+  folder <- p$folder("site", "a/b/c")
+
+  folder_files_res <- readRDS("mocks/folder_files_response.rds")
+  contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
+
+  ## TODO: it would be better here rather than mocking out the GET, to
+  ## be able to mock out the $files() call that we do, but that
+  ## requires replacing the method, and I can't get this to work
+  ## somehow.
+
+  mock_get <- mockery::mock(folder_files_res)
+  mock_post <- mockery::mock(contextinfo_res)
+  mock_delete <- mockery::mock(mock_response(200))
+
+  with_mock(
+    "httr::GET" = mock_get,
+    "httr::POST" = mock_post,
+    "httr::DELETE" = mock_delete,
+    folder$delete("d/e", "test.txt"))
+
+  mockery::expect_called(mock_get, 1)
+  expect_match(
+    mockery::mock_args(mock_get)[[1]][[1]],
+    "_api/web/GetFolderByServerRelativeURL\\('a/b/c/d/e'\\)/files$")
+  mockery::expect_called(mock_post, 1) # this is the digest call
+  mockery::expect_called(mock_delete, 1)
+
+  args <- mockery::mock_args(mock_delete)[[1]]
+  expect_match(
+    args[[1]],
+    "_api/web/GetFolderByServerRelativeURL\\('a/b/c/d/e'\\)/recycle()")
+  expect_equal(
+    args[[2]],
+    httr::add_headers("If-Match" = "{etag or *}"))
+})
+
+
+test_that("delete folder errors if check fails", {
+  p <- mock_sharepoint()
+  folder <- p$folder("site", "a/b/c")
+
+  folder_files_res <- readRDS("mocks/folder_files_response.rds")
+  contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
+
+  mock_get <- mockery::mock(folder_files_res)
+  mock_post <- mockery::mock(contextinfo_res)
+  mock_delete <- mockery::mock(mock_response(200))
+
+  with_mock(
+    "httr::GET" = mock_get,
+    "httr::POST" = mock_post,
+    "httr::DELETE" = mock_delete,
+    expect_error(
+      folder$delete("d/e", "not-here"),
+      "The file 'not-here' was not found in the folder to delete 'd/e'"))
+
+  mockery::expect_called(mock_get, 1)
+  expect_match(
+    mockery::mock_args(mock_get)[[1]][[1]],
+    "_api/web/GetFolderByServerRelativeURL\\('a/b/c/d/e'\\)/files$")
+  mockery::expect_called(mock_post, 0) # this is the digest call
+  mockery::expect_called(mock_delete, 0)
+})

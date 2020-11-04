@@ -89,6 +89,19 @@ sharepoint_client <- R6::R6Class(
     },
 
     #' @description
+    #' Send DELETE request to sharepoint
+    #'
+    #' @param ... Args passed on to httr
+    #'
+    #' @param digest Argument passed through to \code{$digest()} to create
+    #' the response digest; typically a site name
+    #'
+    #' @return HTTP response
+    DELETE = function(..., digest) {
+      self$request(httr::DELETE, ..., self$digest(digest))
+    },
+
+    #' @description
     #' Send POST request to sharepoint
     #'
     #' @param verb A httr function for type of request to send e.g. httr::GET
