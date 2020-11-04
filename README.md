@@ -1,4 +1,4 @@
-# spud
+# spud <img src='man/figures/logo.png' align="right" height="139" />
 
 <!-- badges: start -->
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
