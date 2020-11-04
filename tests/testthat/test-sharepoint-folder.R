@@ -76,8 +76,8 @@ test_that("get parent directory", {
   p <- mock_sharepoint()
   folder <- p$folder("site", "a/b/c")
   parent <- folder$parent()
-  expect_equal(r6_private(parent)$path, "a/b")
-  expect_equal(r6_private(parent$parent()$parent())$path, ".")
+  expect_equal(parent$path, "a/b")
+  expect_equal(parent$parent()$parent()$path, ".")
 })
 
 
@@ -86,7 +86,7 @@ test_that("get child directory", {
   folder <- p$folder("site", "a")
   child <- folder$folder("b")$folder("c")
   expect_is(folder, "sharepoint_folder")
-  expect_equal(r6_private(child)$path, "a/b/c")
+  expect_equal(child$path, "a/b/c")
 })
 
 
