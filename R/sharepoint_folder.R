@@ -46,7 +46,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all files within the folder
-    #' @param path Directory relative to this folder, uses this folder if NULL
+    #' @param path Folder relative to this folder, uses this folder if NULL
     files = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/files",
@@ -64,7 +64,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all folders within the folder
-    #' @param path Directory relative to this folder, uses this folder if NULL
+    #' @param path Folder relative to this folder, uses this folder if NULL
     folders = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/folders",
@@ -81,7 +81,7 @@ sharepoint_folder <- R6::R6Class(
 
     #' @description List all folders and files within the folder; this is a
     #' convenience wrapper around the \code{files} and \code{folders} methods.
-    #' @param path Directory relative to this folder, uses this folder if NULL
+    #' @param path Folder relative to this folder, uses this folder if NULL
     list = function(path = NULL) {
       folders <- self$folders(path)
       files <- self$files(path)
@@ -139,7 +139,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description Create a folder on sharepoint
-    #' @param path Directory relative to this folder
+    #' @param path Folder relative to this folder
     create = function(path) {
       url <- sprintf("sites/%s/_api/web/folders", private$site)
 
