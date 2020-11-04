@@ -85,7 +85,7 @@ set_cookies <- function(handle, data) {
             handle = handle)
 }
 
-integration_test_client <- local({
+integration_test_client <- function() {
   v <- c("username", "password", "host", "site", "root")
   dat <- Sys.getenv(paste0("SPUD_TEST_SHAREPOINT_", toupper(v)), NA_character_)
 
@@ -105,7 +105,5 @@ integration_test_client <- local({
   tmp <- basename(tempfile("test_"))
   folder <- root$create(tmp)
 
-  function() {
-    list(folder = folder, client = client)
-  }
-})
+  list(folder = folder, client = client)
+}
