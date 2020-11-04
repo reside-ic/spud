@@ -56,3 +56,17 @@ sharepoint_download("https://imperiallondon.sharepoint.com", "Shared%20Documents
 * Error handling - do we want to do some better error handling here if any of the requests fail? e.g. particularly bad if downloading a resource which doesn't exist
 * Testing - look at httptest & vcr which might provide some slightly nicer testing atm we are relying heavily on mocks.
 * Vignette - write one!
+
+## Tests
+
+Most of the tests make heavy use of mocks, so if the API changes we might not catch breaking changes. In order to hedge against this we run a small number of integration tests against sharepoint. To opt into running these tests you need to define some environment variables:
+
+```
+SPUD_TEST_SHAREPOINT_USERNAME=you@example.com
+SPUD_TEST_SHAREPOINT_PASSWORD=s3cret!
+SPUD_TEST_SHAREPOINT_HOST=https://example.sharepoint.com
+SPUD_TEST_SHAREPOINT_SITE=yoursite
+SPUD_TEST_SHAREPOINT_ROOT=path/on/your/site
+```
+
+This will create a new directory on your sharepoint site below the path given at `SPUD_TEST_SHAREPOINT_ROOT`, one per time the test suite is run, and it will add, list, remove files that are there.
