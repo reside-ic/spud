@@ -7,3 +7,4 @@
 ^Makefile$
 ^scripts$
 ^docs$
+^\.github$

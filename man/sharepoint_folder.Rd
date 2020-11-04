@@ -15,6 +15,7 @@ Interact with sharepoint folders and their files.
 \item \href{#method-files}{\code{sharepoint_folder$files()}}
 \item \href{#method-folders}{\code{sharepoint_folder$folders()}}
 \item \href{#method-list}{\code{sharepoint_folder$list()}}
+\item \href{#method-delete}{\code{sharepoint_folder$delete()}}
 \item \href{#method-parent}{\code{sharepoint_folder$parent()}}
 \item \href{#method-folder}{\code{sharepoint_folder$folder()}}
 \item \href{#method-create}{\code{sharepoint_folder$create()}}
@@ -63,7 +64,7 @@ List all files within the folder
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{Directory relative to this folder, uses this folder if NULL}
+\item{\code{path}}{Folder relative to this folder, uses this folder if NULL}
 }
 \if{html}{\out{</div>}}
 }
@@ -80,7 +81,7 @@ List all folders within the folder
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{Directory relative to this folder, uses this folder if NULL}
+\item{\code{path}}{Folder relative to this folder, uses this folder if NULL}
 }
 \if{html}{\out{</div>}}
 }
@@ -98,7 +99,35 @@ convenience wrapper around the \code{files} and \code{folders} methods.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{Directory relative to this folder, uses this folder if NULL}
+\item{\code{path}}{Folder relative to this folder, uses this folder if NULL}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-delete"></a>}}
+\if{latex}{\out{\hypertarget{method-delete}{}}}
+\subsection{Method \code{delete()}}{
+Delete a folder. Be extremely careful as you could
+use this to delete an entire sharepoint. Deleted files are sent
+to the recycle bin, so can be restored with relative ease, but
+it will still be alarming. There is a mechanism to prevent
+accidental deletion by declaring a file that exists within the
+folder.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$delete(path, check)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{The path to delete. Use \code{NULL} to delete the current
+folder.}
+
+\item{\code{check}}{A file (not folder) that exists directly within
+\code{path}, used as a method to verify that you really do want
+to delete this folder (to prevent things like accidental deletion
+of the entire sharepoint, for example).}
 }
 \if{html}{\out{</div>}}
 }
@@ -151,7 +180,7 @@ Create a folder on sharepoint
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{Directory relative to this folder}
+\item{\code{path}}{Folder relative to this folder}
 }
 \if{html}{\out{</div>}}
 }

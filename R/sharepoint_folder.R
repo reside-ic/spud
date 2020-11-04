@@ -46,7 +46,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all files within the folder
-    #' @param path Directory relative to this folder, uses this folder if NULL
+    #' @param path Folder relative to this folder, uses this folder if NULL
     files = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/files",
@@ -64,7 +64,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description List all folders within the folder
-    #' @param path Directory relative to this folder, uses this folder if NULL
+    #' @param path Folder relative to this folder, uses this folder if NULL
     folders = function(path = NULL) {
       url <- sprintf(
         "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/folders",
@@ -81,7 +81,7 @@ sharepoint_folder <- R6::R6Class(
 
     #' @description List all folders and files within the folder; this is a
     #' convenience wrapper around the \code{files} and \code{folders} methods.
-    #' @param path Directory relative to this folder, uses this folder if NULL
+    #' @param path Folder relative to this folder, uses this folder if NULL
     list = function(path = NULL) {
       folders <- self$folders(path)
       files <- self$files(path)
@@ -91,6 +91,36 @@ sharepoint_folder <- R6::R6Class(
       files$is_folder <- FALSE
       v <- c("name", "items", "size", "is_folder", "created", "modified")
       rbind(folders[v], files[v])
+    },
+
+    #' @description Delete a folder. Be extremely careful as you could
+    #' use this to delete an entire sharepoint. Deleted files are sent
+    #' to the recycle bin, so can be restored with relative ease, but
+    #' it will still be alarming. There is a mechanism to prevent
+    #' accidental deletion by declaring a file that exists within the
+    #' folder.
+    #'
+    #' @param path The path to delete. Use \code{NULL} to delete the current
+    #'   folder.
+    #'
+    #' @param check A file (not folder) that exists directly within
+    #'   \code{path}, used as a method to verify that you really do want
+    #'   to delete this folder (to prevent things like accidental deletion
+    #'   of the entire sharepoint, for example).
+    delete = function(path, check) {
+      if (!(check %in% self$files(path)$name)) {
+        stop(sprintf(
+          "The file '%s' was not found in the folder to delete '%s'",
+          check, path))
+      }
+      url <- sprintf(
+        "/sites/%s/_api/web/GetFolderByServerRelativeURL('%s')/recycle()",
+        private$site, URLencode(file_path2(private$path, path)))
+      headers <- httr::add_headers(
+        "If-Match" = "{etag or *}")
+      r <- private$client$DELETE(url, headers, digest = private$site)
+      httr::stop_for_status(r)
+      invisible()
     },
 
     #' @description Create an object referring to the parent folder
@@ -109,7 +139,7 @@ sharepoint_folder <- R6::R6Class(
     },
 
     #' @description Create a folder on sharepoint
-    #' @param path Directory relative to this folder
+    #' @param path Folder relative to this folder
     create = function(path) {
       url <- sprintf("sites/%s/_api/web/folders", private$site)
 

@@ -1,6 +1,10 @@
+# spud 0.1.6
+
+* Add a delete method to folders (reside-205)
+
 # spud 0.1.5
 
-* Rename package to spud (Sharepoint upload & delete) (reside-191)
+* Rename package to spud (Sharepoint upload & download) (reside-191)
 
 # pointr 0.1.4
 
