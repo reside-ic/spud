@@ -263,10 +263,10 @@ test_that("delete folder", {
   folder_files_res <- readRDS("mocks/folder_files_response.rds")
   contextinfo_res <- readRDS("mocks/contextinfo_response.rds")
 
-  ## TODO: it would be better here rather than mocking out the GET, to
-  ## be able to mock out the $files() call that we do, but that
-  ## requires replacing the method, and I can't get this to work
-  ## somehow.
+  ## It would be better here rather than mocking out the GET, to be
+  ## able to mock out the $files() call that we do, but that requires
+  ## replacing the method, and I can't get this to work. Really that
+  ## might be nice to do across much of the package.
 
   mock_get <- mockery::mock(folder_files_res)
   mock_post <- mockery::mock(contextinfo_res)
