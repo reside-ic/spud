@@ -1,6 +1,7 @@
 context("credentials")
 
 test_that("can get user auth credentials", {
+  stop("test buildkite integration")
   mock_read_cred <- mockery::mock("mock_cred", cycle = TRUE)
   withr::with_envvar(
     c("SHAREPOINT_USERNAME" = NA, "SHAREPOINT_PASS" = NA),
