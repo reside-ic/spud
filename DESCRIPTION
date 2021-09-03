@@ -21,6 +21,7 @@ Imports:
     glue,
     httr,
     jsonlite,
+    Microsoft365R,
     tools,
     xml2
 Roxygen: list(markdown = TRUE)
