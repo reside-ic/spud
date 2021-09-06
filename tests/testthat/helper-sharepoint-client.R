@@ -1,28 +1,33 @@
-#' Create a sharepoint client using mocks to skip authentication steps
-#'
-#' @return An authenticated sharepoint client with root url httpbin.org
-#' @keywords internal
-#' @noRd
-mock_sharepoint_client <- function(sharepoint_url, set_cookies = FALSE) {
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  mock_post <- mockery::mock(security_token_res, cookies_res)
-
-  withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post, {
-      client <- sharepoint_client$new(sharepoint_url)
-    })
+mock_get_sharepoint_site <- function(...) {
+  list_items <- readRDS("mocks/list_items_response.rds")
+  create_folder <- invisible(TRUE)
+  upload <- invisible(TRUE)
+  item <- list(
+    delete = mockery::mock(NULL, cycle = TRUE),
+    download = mockery::mock(NULL, cycle = TRUE)
   )
-
-  if (set_cookies) {
-    handle <- r6_private(client)$handle
-    set_cookies(handle, cookies_res)
-  }
-
-  client
+  root_drive_item <- list(
+    list_items = mockery::mock(list_items, cycle = TRUE),
+    get_item = mockery::mock(item, cycle = TRUE),
+    create_folder = mockery::mock(create_folder, cycle = TRUE),
+    upload = mockery::mock(upload, cycle = TRUE)
+  )
+  list(
+    get_drive = function() {
+      list(
+        get_item = function(...) {
+          root_drive_item
+        }
+      )
+    }
+  )
 }
 
+test_folder <- function() {
+  with_mock("Microsoft365R::get_sharepoint_site" = mock_get_sharepoint_site, {
+    sharepoint_folder$new("url", "tenant", "app", "scopes", NULL)
+  })
+}
 
 mock_sharepoint <- function(sharepoint_url) {
   security_token_res <- readRDS("mocks/security_token_response.rds")
