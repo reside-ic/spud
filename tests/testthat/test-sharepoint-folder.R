@@ -49,6 +49,7 @@ test_that("list everything", {
 
 
 test_that("get child & parent directories", {
+  testthat::skip_on_os("windows")
   folder <- test_folder()
   expect_equal(folder$path, "/")
 
