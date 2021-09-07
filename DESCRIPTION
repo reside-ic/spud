@@ -14,15 +14,11 @@ LazyData: true
 Suggests: 
     mockery,
     testthat,
-    tibble (>= 3.0.0),
     withr
 Imports: 
-    getPass,
-    glue,
-    httr,
-    jsonlite,
     Microsoft365R,
     tools,
-    xml2
+Remotes:
+    Azure/Microsoft365R
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
