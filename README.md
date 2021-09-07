@@ -12,22 +12,84 @@ This app uses [Microsoft365R](https://github.com/Azure/Microsoft365R) for progra
 
 ## Authentication
 
-See [Microsoft365R docs](https://github.com/Azure/Microsoft365R#authentication).
+Spud uses Microsoft365R for managing all authentication. This requires some info to be able to authenticate, you can pass this through args to the exported functions or by setting environment variables. See `?spud::sharepoint_download` for details of env vars used.
 
+See [Microsoft365R docs](https://github.com/Azure/Microsoft365R#authentication) for details of how authentication args are used.
+
+## Usage
+
+### Download a file via function
+
+Use `sharepoint_download` to download a file.
+
+```
+spud::sharepoint_download("path/to/source", "destination.txt",
+                          site_url = "site_url")
+```
+
+### Download via object
+
+Alternatively create a `sharepoint` object which you can use to download
+
+```
+sp <- spud::sharepoint$new(site_url = "site_url")
+sp$download("path/to/source", "destination.txt")
+```
+
+### Using `sharepoint_folder` object
+
+Create a handle on a sharepoint folder which you can use for creating subfolders, list files, uploading files, download files or deleting items.
+
+```
+sp <- spud::sharepoint$new(site_url = "site_url")
+folder <- sp$folder("path/to/folder")
+```
+
+#### Create folder
+
+```
+sub_folder <- folder$create("folder_name")
+```
+
+#### List files
+
+```
+folder$list()    # List all
+folder$files()   # List only files
+folder$folders() # List only folders
+```
+
+#### Download file
+
+```
+folder$download("path/to/file", "destination.txt")
+```
+
+#### Upload file
+
+```
+folder$upload("path/to/file", "sharepoint/destination")
+```
+
+#### Delete items
+
+```
+folder$delete("path/to/file")
+```
 
 ## Tests
 
-Most of the tests make heavy use of mocks, so if the API changes we might not catch breaking changes. In order to hedge against this we run a small number of integration tests against sharepoint. To opt into running these tests you need to define some environment variables:
+Most of the tests make heavy use of mocks, so if the API changes we might not catch breaking changes. In order to hedge against this we run a small number of manual tests against sharepoint. To opt into running these tests you need to define some environment variables:
 
 ```
-SPUD_TEST_SHAREPOINT_USERNAME=you@example.com
-SPUD_TEST_SHAREPOINT_PASSWORD=s3cret!
-SPUD_TEST_SHAREPOINT_HOST=https://example.sharepoint.com
-SPUD_TEST_SHAREPOINT_SITE=yoursite
-SPUD_TEST_SHAREPOINT_ROOT=path/on/your/site
+SHAREPOINT_SITE_URL=http://example.com
+SHAREPOINT_TENANT=tenant
+SHAREPOINT_APP_ID=123-345
 ```
 
-This will create a new directory on your sharepoint site below the path given at `SPUD_TEST_SHAREPOINT_ROOT`, one per time the test suite is run, and it will add, list, remove files that are there.
+Alternative to `SHAREPOINT_SITE_URL` you can set `SHAREPOINT_SITE_ID` or `SHAREPOINT_SITE_NAME`. One and only one of these values must be set. `SHAREPOINT_TENANT` should be the name of your Azure Active Directory (AAD) tenant. And `SHAREPOINT_APP_ID` should be set to the custom app registration ID for the Microsoft365R app. This will default to using Microsoft365R's own internal app ID.
+
+This will create a new directory on your sharepoint site, one per time the test suite is run, and it will add, list, remove files that are there. The tests will cleanup if they run successfully.
 
 ## License
 

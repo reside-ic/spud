@@ -19,19 +19,24 @@
 #'   ovewritten if it exists (otherwise it an error will be thrown)
 #'
 #' @param site_name The name of the sharepoint site passed to
-#'   [Microsoft365R::get_sharepoint_site()]
+#'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+#'   `SHAREPOINT_SITE_NAME`.
 #'
 #' @param site_url The url of the sharepoint site passed to
-#'   [Microsoft365R::get_sharepoint_site()]
+#'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+#'   `SHAREPOINT_SITE_URL`.
 #'
 #' @param site_id The ID of the sharepoint site passed to
-#'   [Microsoft365R::get_sharepoint_site()]
+#'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+#'   `SHAREPOINT_SITE_ID`.
 #'
 #' @param tenant The name of the Azure Active Directory tenant
-#'   passed to [Microsoft365R::get_sharepoint_site()]
+#'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+#'   env var `SHAREPOINT_SITE_TENANT`.
 #'
 #' @param app A custom app registration ID to use for authentication
-#'   passed to [Microsoft365R::get_sharepoint_site()]
+#'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+#'   env var `SHAREPOINT_SITE_APP_ID`.
 #'
 #' @param scopes Microsoft graph scopes to obtain passed to
 #'   [Microsoft365R::get_sharepoint_site()]
@@ -78,15 +83,20 @@ sharepoint <- R6::R6Class(
     #' @param auth `sharepoint_auth` object containing authentication data
     #'   passed to the client.
     #' @param site_name The name of the sharepoint site passed to
-    #'   [Microsoft365R::get_sharepoint_site()]
+    #'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+    #'   `SHAREPOINT_SITE_NAME`.
     #' @param site_url The url of the sharepoint site passed to
-    #'   [Microsoft365R::get_sharepoint_site()]
+    #'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+    #'   `SHAREPOINT_SITE_URL`.
     #' @param site_id The ID of the sharepoint site passed to
-    #'   [Microsoft365R::get_sharepoint_site()]
+    #'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+    #'   `SHAREPOINT_SITE_ID`.
     #' @param tenant The name of the Azure Active Directory tenant
-    #'   passed to [Microsoft365R::get_sharepoint_site()].
+    #'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+    #'   env var `SHAREPOINT_SITE_TENANT`.
     #' @param app A custom app registration ID to use for authentication
-    #'   passed to [Microsoft365R::get_sharepoint_site()].
+    #'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+    #'   env var `SHAREPOINT_SITE_APP_ID`.
     #' @param scopes Microsoft graph scopes to obtain passed to
     #'   [Microsoft365R::get_sharepoint_site()].
     #' @return A new `sharepoint` object
