@@ -13,9 +13,8 @@ RUN install_packages --repo=https://mrc-ide.github.io/drat \
     mockery \
     remotes \
     testthat \
-    withr
-
-RUN install_remote \
+    withr \
+  && install_remote \
     Azure/Microsoft365R
 
 COPY . /src
