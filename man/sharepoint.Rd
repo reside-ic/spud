@@ -11,9 +11,7 @@ Create sharepoint connection for downloading data.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{client}}{A low-level sharepoint client object, which can be used to interact
-directly with the sharepoint API.  This object mostly handles
-authentication, etc.}
+\item{\code{client}}{A sharepoint_folder object}
 }
 \if{html}{\out{</div>}}
 }
@@ -29,17 +27,44 @@ authentication, etc.}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Create sharepoint object for downloading data from sharepoint
+Create sharepoint object for downloading data from sharepoint. If
+\code{auth} object provided any individual auth args will be used to
+override those on the \code{auth} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint$new(sharepoint_url, auth = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint$new(
+  site_name = NULL,
+  site_url = NULL,
+  site_id = NULL,
+  tenant = NULL,
+  app = NULL,
+  scopes = NULL,
+  auth = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sharepoint_url}}{Root URL of sharepoint site to download from}
+\item{\code{site_name}}{The name of the sharepoint site passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
 
-\item{\code{auth}}{Authentication data passed to the client}
+\item{\code{site_url}}{The url of the sharepoint site passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+
+\item{\code{site_id}}{The ID of the sharepoint site passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+
+\item{\code{tenant}}{The name of the Azure Active Directory tenant
+passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}.}
+
+\item{\code{app}}{A custom app registration ID to use for authentication
+passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}.}
+
+\item{\code{scopes}}{Microsoft graph scopes to obtain passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}.}
+
+\item{\code{auth}}{\code{sharepoint_auth} object containing authentication data
+passed to the client.}
 }
 \if{html}{\out{</div>}}
 }
@@ -53,12 +78,7 @@ A new \code{sharepoint} object
 \subsection{Method \code{download()}}{
 Download data from sharepoint
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint$download(
-  sharepoint_path,
-  dest = NULL,
-  progress = FALSE,
-  overwrite = FALSE
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint$download(sharepoint_path, dest = NULL, overwrite = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -67,8 +87,6 @@ Download data from sharepoint
 \item{\code{sharepoint_path}}{Path to the resource within sharepoint}
 
 \item{\code{dest}}{Path to save downloaded data to}
-
-\item{\code{progress}}{Display a progress bar during download?}
 
 \item{\code{overwrite}}{Overwrite existing files?}
 }
@@ -82,25 +100,18 @@ Path to saved data
 \if{html}{\out{<a id="method-folder"></a>}}
 \if{latex}{\out{\hypertarget{method-folder}{}}}
 \subsection{Method \code{folder()}}{
-Create a \code{folder} object representing a sharepoint folder,
-with which one can list, download and upload files.  See
+Create a \code{sharepoint_folder} object representing a sharepoint
+folder, with which one can list, download and upload files.  See
 \code{\link{sharepoint_folder}} for more details.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint$folder(site, path, verify = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint$folder(path = "/")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{site}}{The name of the sharepoint site (most likely a short string)}
-
-\item{\code{path}}{Relative path within that shared site.  It seems
-that "Shared Documents" is a common path that most likely
-represents a "Documents" collection when viewed in the
-sharepoint web interface.}
-
-\item{\code{verify}}{Logical, indicating if the site/path combination is
-valid (slower but safer).}
+\item{\code{path}}{Path to folder from root of sharepoint site. Defaults to
+"/" for the root.}
 }
 \if{html}{\out{</div>}}
 }

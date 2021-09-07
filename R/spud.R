@@ -15,10 +15,26 @@
 #' save location is a tempfile with the same file extension as the downloaded
 #' file.
 #'
-#' @param progress If \code{TRUE} then HTTP requests will print a progress bar
-#'
 #' @param overwrite if \code{TRUE} then the \code{dest} will be
 #'   ovewritten if it exists (otherwise it an error will be thrown)
+#'
+#' @param site_name The name of the sharepoint site passed to
+#'   [Microsoft365R::get_sharepoint_site()]
+#'
+#' @param site_url The url of the sharepoint site passed to
+#'   [Microsoft365R::get_sharepoint_site()]
+#'
+#' @param site_id The ID of the sharepoint site passed to
+#'   [Microsoft365R::get_sharepoint_site()]
+#'
+#' @param tenant The name of the Azure Active Directory tenant
+#'   passed to [Microsoft365R::get_sharepoint_site()]
+#'
+#' @param app A custom app registration ID to use for authentication
+#'   passed to [Microsoft365R::get_sharepoint_site()]
+#'
+#' @param scopes Microsoft graph scopes to obtain passed to
+#'   [Microsoft365R::get_sharepoint_site()]
 #'
 #' @return Path to downloaded data
 #'
@@ -26,9 +42,7 @@
 sharepoint_download <- function(
   sharepoint_path, dest = NULL, overwrite = FALSE,
   site_name = NULL, site_url = NULL, site_id = NULL,
-  tenant = Sys.getenv("CLIMICROSOFT365_TENANT", "common"),
-  app = Sys.getenv("CLIMICROSOFT365_AADAPPID"),
-  scopes = c("Group.ReadWrite.All", "Directory.Read.All", "Sites.Manage.All")) {
+  tenant = NULL, app = NULL, scopes = NULL) {
 
   sp <- sharepoint_new(site_name = site_name,
                        site_url = site_url,
@@ -58,16 +72,27 @@ sharepoint <- R6::R6Class(
     client = NULL,
 
     #' @description
-    #' Create sharepoint object for downloading data from sharepoint
-    #' @param auth Authentication data passed to the client
-    #' @param sharepoint_url Root URL of sharepoint site to download from
+    #' Create sharepoint object for downloading data from sharepoint. If
+    #'  `auth` object provided any individual auth args will be used to
+    #'   override those on the `auth` object.
+    #' @param auth `sharepoint_auth` object containing authentication data
+    #'   passed to the client.
+    #' @param site_name The name of the sharepoint site passed to
+    #'   [Microsoft365R::get_sharepoint_site()]
+    #' @param site_url The url of the sharepoint site passed to
+    #'   [Microsoft365R::get_sharepoint_site()]
+    #' @param site_id The ID of the sharepoint site passed to
+    #'   [Microsoft365R::get_sharepoint_site()]
+    #' @param tenant The name of the Azure Active Directory tenant
+    #'   passed to [Microsoft365R::get_sharepoint_site()].
+    #' @param app A custom app registration ID to use for authentication
+    #'   passed to [Microsoft365R::get_sharepoint_site()].
+    #' @param scopes Microsoft graph scopes to obtain passed to
+    #'   [Microsoft365R::get_sharepoint_site()].
     #' @return A new `sharepoint` object
     initialize = function(
       site_name = NULL, site_url = NULL, site_id = NULL,
-      tenant = Sys.getenv("CLIMICROSOFT365_TENANT", "common"),
-      app = Sys.getenv("CLIMICROSOFT365_AADAPPID"),
-      scopes = c("Group.ReadWrite.All", "Directory.Read.All", "Sites.Manage.All"),
-      auth = NULL) {
+      tenant = NULL, app = NULL, scopes = NULL, auth = NULL) {
 
       auth <- sharepoint_auth(site_name, site_url, site_id, tenant, app,
                               scopes, auth)
@@ -85,8 +110,8 @@ sharepoint <- R6::R6Class(
     },
 
     #' @description
-    #' Create a \code{folder} object representing a sharepoint folder,
-    #' with which one can list, download and upload files.  See
+    #' Create a \code{sharepoint_folder} object representing a sharepoint
+    #' folder, with which one can list, download and upload files.  See
     #' \code{\link{sharepoint_folder}} for more details.
     #'
     #' @param path Path to folder from root of sharepoint site. Defaults to

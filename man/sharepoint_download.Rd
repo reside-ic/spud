@@ -5,17 +5,18 @@
 \title{Download a dataset from sharepoint}
 \usage{
 sharepoint_download(
-  sharepoint_url,
   sharepoint_path,
   dest = NULL,
-  progress = FALSE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  site_name = NULL,
+  site_url = NULL,
+  site_id = NULL,
+  tenant = NULL,
+  app = NULL,
+  scopes = NULL
 )
 }
 \arguments{
-\item{sharepoint_url}{The base URL of sharepoint e.g.
-https://imperiallondon.sharepoint.com}
-
 \item{sharepoint_path}{The path to the dataset you want to download - this
 should include any subsites in the url and should be of the form
 sites/nested/subsites/docs/path/to/document
@@ -31,10 +32,26 @@ more details.}
 save location is a tempfile with the same file extension as the downloaded
 file.}
 
-\item{progress}{If \code{TRUE} then HTTP requests will print a progress bar}
-
 \item{overwrite}{if \code{TRUE} then the \code{dest} will be
 ovewritten if it exists (otherwise it an error will be thrown)}
+
+\item{site_name}{The name of the sharepoint site passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+
+\item{site_url}{The url of the sharepoint site passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+
+\item{site_id}{The ID of the sharepoint site passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+
+\item{tenant}{The name of the Azure Active Directory tenant
+passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+
+\item{app}{A custom app registration ID to use for authentication
+passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+
+\item{scopes}{Microsoft graph scopes to obtain passed to
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
 }
 \value{
 Path to downloaded data

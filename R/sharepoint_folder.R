@@ -12,6 +12,8 @@ sharepoint_folder <- R6::R6Class(
     #' @field path Path of the folder (readonly)
     path = NULL,
 
+    #' @field drive A [Microsoft365R::ms_drive()] object representing the
+    #' sharepoint drive.
     drive = NULL,
 
     #' @description Create sharepoint_folder object to enable listing, creating
@@ -87,7 +89,6 @@ sharepoint_folder <- R6::R6Class(
 
     #' @description Create an object referring to a child folder
     #' @param path The name of the folder, relative to this folder
-    #' @param verify Verify that the folder exists (which it must really here)
     folder = function(path) {
       sharepoint_folder$new(private$auth, file.path(self$path, path))
     },

@@ -49,9 +49,9 @@ test_that("sharepoint_download saves data to disk", {
     site_name = "site",
     site_url = NULL,
     site_id = NULL,
-    tenant = "common",
-    app = "",
-    scopes = c("Group.ReadWrite.All", "Directory.Read.All", "Sites.Manage.All"),
+    tenant = NULL,
+    app = NULL,
+    scopes = NULL,
     auth = NULL
   ))
 
