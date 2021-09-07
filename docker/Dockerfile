@@ -7,9 +7,8 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 COPY docker/bin /usr/local/bin/
-RUN sed  -i'' '/mran.microsoft.com/d' /usr/local/lib/R/etc/Rprofile.site
-
-RUN install_packages --repo=https://mrc-ide.github.io/drat \
+RUN sed  -i'' '/mran.microsoft.com/d' /usr/local/lib/R/etc/Rprofile.site \
+  && install_packages --repo=https://mrc-ide.github.io/drat \
     mockery \
     remotes \
     testthat \
