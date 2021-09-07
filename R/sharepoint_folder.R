@@ -4,10 +4,7 @@ sharepoint_folder <- R6::R6Class(
   cloneable = FALSE,
 
   private = list(
-    tenant = NULL,
-    app = NULL,
-    site_url = NULL,
-    scopes = NULL,
+    auth = NULL,
     site = NULL
   ),
 
@@ -19,25 +16,13 @@ sharepoint_folder <- R6::R6Class(
 
     #' @description Create sharepoint_folder object to enable listing, creating
     #' downloading and uploading files & folders
-    #' @param site_url The url of the sharepoint site passed to
-    #' [Microsoft365R::get_sharepoint_site()]
-    #' @param tenant The name of the Azure Active Directory tenant
-    #' passed to [Microsoft365R::get_sharepoint_site()].
-    #' @param app A custom app registration ID to use for authentication
-    #' passed to [Microsoft365R::get_sharepoint_site()].
-    #' @param scopes Microsoft graph scopes to obtain passed to
-    #' [Microsoft365R::get_sharepoint_site()].
+    #' @param auth Auth info passed to [Microsoft365R::get_sharepoint_site()]
+    #' contains site_name, site_url, site_id, tenant, app and scopes.
     #' @param path Relative path within that shared site.
-    initialize = function(site_url, tenant, app, scopes, path = NULL) {
-      private$site_url <- site_url
-      private$tenant <- tenant
-      private$app <- app
-      private$scopes <- scopes
-      private$site <- Microsoft365R::get_sharepoint_site(
-        site_url = private$site_url,
-        app = private$app,
-        tenant = private$tenant,
-        scopes = private$scopes)
+    initialize = function(auth, path = NULL) {
+      assert_sharepoint_auth(auth)
+      private$auth <- auth
+      private$site <- do.call(Microsoft365R::get_sharepoint_site, private$auth)
       if (is.null(path)) {
         path <- "/"
       }
@@ -97,16 +82,14 @@ sharepoint_folder <- R6::R6Class(
     #' @description Create an object referring to the parent folder. If this
     #' folder is the root, retrieving parent just returns the root again.
     parent = function() {
-      sharepoint_folder$new(private$site_url, private$tenant, private$app,
-                            private$scopes, dirname(self$path))
+      sharepoint_folder$new(private$auth, dirname(self$path))
     },
 
     #' @description Create an object referring to a child folder
     #' @param path The name of the folder, relative to this folder
     #' @param verify Verify that the folder exists (which it must really here)
     folder = function(path) {
-      sharepoint_folder$new(private$site_url, private$tenant, private$app,
-                            private$scopes, file.path(self$path, path))
+      sharepoint_folder$new(private$auth, file.path(self$path, path))
     },
 
     #' @description Create a folder on sharepoint
@@ -139,3 +122,7 @@ sharepoint_folder <- R6::R6Class(
     }
   )
 )
+
+sharepoint_folder_new <- function(auth) {
+  sharepoint_folder$new(auth)
+}

@@ -157,9 +157,3 @@ test_that("delete folder", {
   expect_equal(mockery::mock_args(item$delete)[[1]],
                list(confirm = TRUE))
 })
-
-
-test_that("sharepoint folder", {
-  testthat::skip_if_not(interactive())
-  #TODO: Add a manual test without leaking login info for sp
-})

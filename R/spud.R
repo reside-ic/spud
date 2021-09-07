@@ -1,7 +1,5 @@
 #' Download a dataset from sharepoint
 #'
-#' @param sharepoint_url The base URL of sharepoint e.g.
-#' https://imperiallondon.sharepoint.com
 #' @param sharepoint_path The path to the dataset you want to download - this
 #' should include any subsites in the url and should be of the form
 #' sites/nested/subsites/docs/path/to/document
@@ -25,10 +23,26 @@
 #' @return Path to downloaded data
 #'
 #' @export
-sharepoint_download <- function(sharepoint_url, sharepoint_path, dest = NULL,
-                                progress = FALSE, overwrite = FALSE) {
-  sp <- sharepoint$new(sharepoint_url)
-  sp$download(sharepoint_path, dest, progress, overwrite)
+sharepoint_download <- function(
+  sharepoint_path, dest = NULL, overwrite = FALSE,
+  site_name = NULL, site_url = NULL, site_id = NULL,
+  tenant = Sys.getenv("CLIMICROSOFT365_TENANT", "common"),
+  app = Sys.getenv("CLIMICROSOFT365_AADAPPID"),
+  scopes = c("Group.ReadWrite.All", "Directory.Read.All", "Sites.Manage.All")) {
+
+  sp <- sharepoint_new(site_name = site_name,
+                       site_url = site_url,
+                       site_id = site_id,
+                       tenant = tenant,
+                       app = app,
+                       scopes = scopes,
+                       auth = NULL)
+  sp$download(sharepoint_path, dest, overwrite)
+}
+
+sharepoint_new <- function(site_name, site_url, site_id, tenant, app, scopes,
+                           auth) {
+  sharepoint$new(site_name, site_url, site_id, tenant, app, scopes, auth)
 }
 
 #' Create sharepoint connection for downloading data.
@@ -40,31 +54,34 @@ sharepoint <- R6::R6Class(
 
   public = list(
     #' @field client
-    #' A low-level sharepoint client object, which can be used to interact
-    #' directly with the sharepoint API.  This object mostly handles
-    #' authentication, etc.
+    #' A sharepoint_folder object
     client = NULL,
 
     #' @description
     #' Create sharepoint object for downloading data from sharepoint
-    #' @param sharepoint_url Root URL of sharepoint site to download from
     #' @param auth Authentication data passed to the client
+    #' @param sharepoint_url Root URL of sharepoint site to download from
     #' @return A new `sharepoint` object
-    initialize = function(sharepoint_url, auth = NULL) {
-      self$client <- sharepoint_client$new(sharepoint_url, auth)
+    initialize = function(
+      site_name = NULL, site_url = NULL, site_id = NULL,
+      tenant = Sys.getenv("CLIMICROSOFT365_TENANT", "common"),
+      app = Sys.getenv("CLIMICROSOFT365_AADAPPID"),
+      scopes = c("Group.ReadWrite.All", "Directory.Read.All", "Sites.Manage.All"),
+      auth = NULL) {
+
+      auth <- sharepoint_auth(site_name, site_url, site_id, tenant, app,
+                              scopes, auth)
+      self$client <- sharepoint_folder_new(auth)
     },
 
     #' @description
     #' Download data from sharepoint
     #' @param sharepoint_path Path to the resource within sharepoint
     #' @param dest Path to save downloaded data to
-    #' @param progress Display a progress bar during download?
     #' @param overwrite Overwrite existing files?
     #' @return Path to saved data
-    download = function(sharepoint_path, dest = NULL, progress = FALSE,
-                        overwrite = FALSE) {
-      download(self$client, URLencode(sharepoint_path), dest,
-               sharepoint_path, progress, overwrite)
+    download = function(sharepoint_path, dest = NULL, overwrite = FALSE) {
+      self$client$download(sharepoint_path, dest, overwrite)
     },
 
     #' @description
@@ -72,17 +89,10 @@ sharepoint <- R6::R6Class(
     #' with which one can list, download and upload files.  See
     #' \code{\link{sharepoint_folder}} for more details.
     #'
-    #' @param site The name of the sharepoint site (most likely a short string)
-    #'
-    #' @param path Relative path within that shared site.  It seems
-    #' that "Shared Documents" is a common path that most likely
-    #' represents a "Documents" collection when viewed in the
-    #' sharepoint web interface.
-    #'
-    #' @param verify Logical, indicating if the site/path combination is
-    #' valid (slower but safer).
-    folder = function(site, path, verify = FALSE) {
-      sharepoint_folder$new(self$client, site, path, verify)
+    #' @param path Path to folder from root of sharepoint site. Defaults to
+    #' "/" for the root.
+    folder = function(path = "/") {
+      self$client$folder(path)
     }
   )
 )

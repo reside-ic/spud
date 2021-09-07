@@ -7,36 +7,13 @@
 [![codecov.io](https://codecov.io/github/reside-ic/spud/coverage.svg?branch=master)](https://codecov.io/github/reside-ic/spud?branch=master)
 <!-- badges: end -->
 
-Package to enable programmatic downloading of data from sharepoint.
+This app uses [Microsoft365R](https://github.com/Azure/Microsoft365R) for programmatically accessing sharepoint. This is just a wrapper around Microsoft365R to expose an interface we want to use for interacting with sharepoint from orderly.
 
-Authenticates using pattern detailed https://paulryan.com.au/2014/spo-remote-authentication-rest/
-
-There is a package exists on github for managing lists - not clear whether this will work with downloading any data as package doesn't work with most basic example of retrieveing all available lists
-https://github.com/LukasK13/sharepointr#list-all-available-lists
 
 ## Authentication
 
-The authentication mechanism is subject to change.
+See [Microsoft365R docs](https://github.com/Azure/Microsoft365R#authentication).
 
-`spud` will look for the environment variables `SHAREPOINT_USERNAME` and `SHAREPOINT_PASS` for your credentials and prompt interactively for any missing.
-
-Once authenticated you can save your authentication data to disk for future sessions with:
-
-```
-p$client$get_auth_data(".auth")
-```
-
-(for a sharepoint object `p` saving to a file `.auth`).  You can then use this by constructing your object as:
-
-```
-p <- spud::sharepoint$new(..., auth = ".auth")
-```
-
-Be sure to add this file your `.gitignore` and treat it like a password.
-
-### MFA
-
-If using multi-factor authentication then the above approach won't work. You need to generate an app password and enter this when prompted for your password. See [microsoft docs](https://docs.microsoft.com/en-gb/azure/active-directory/user-help/multi-factor-authentication-end-user-app-passwords) for details on how to generate an app password.
 
 ## Tests
 
