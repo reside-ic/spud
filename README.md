@@ -7,50 +7,89 @@
 [![codecov.io](https://codecov.io/github/reside-ic/spud/coverage.svg?branch=master)](https://codecov.io/github/reside-ic/spud?branch=master)
 <!-- badges: end -->
 
-Package to enable programmatic downloading of data from sharepoint.
+This app uses [Microsoft365R](https://github.com/Azure/Microsoft365R) for programmatically accessing sharepoint. This is just a wrapper around Microsoft365R to expose an interface we want to use for interacting with sharepoint from orderly.
 
-Authenticates using pattern detailed https://paulryan.com.au/2014/spo-remote-authentication-rest/
-
-There is a package exists on github for managing lists - not clear whether this will work with downloading any data as package doesn't work with most basic example of retrieveing all available lists
-https://github.com/LukasK13/sharepointr#list-all-available-lists
 
 ## Authentication
 
-The authentication mechanism is subject to change.
+Spud uses Microsoft365R for managing all authentication. This requires some info to be able to authenticate, you can pass this through args to the exported functions or by setting environment variables. See `?spud::sharepoint_download` for details of env vars used.
 
-`spud` will look for the environment variables `SHAREPOINT_USERNAME` and `SHAREPOINT_PASS` for your credentials and prompt interactively for any missing.
+See [Microsoft365R docs](https://github.com/Azure/Microsoft365R#authentication) for details of how authentication args are used.
 
-Once authenticated you can save your authentication data to disk for future sessions with:
+## Usage
 
-```
-p$client$get_auth_data(".auth")
-```
+### Download a file via function
 
-(for a sharepoint object `p` saving to a file `.auth`).  You can then use this by constructing your object as:
+Use `sharepoint_download` to download a file.
 
 ```
-p <- spud::sharepoint$new(..., auth = ".auth")
+spud::sharepoint_download("path/to/source", "destination.txt",
+                          site_url = "site_url")
 ```
 
-Be sure to add this file your `.gitignore` and treat it like a password.
+### Download via object
 
-### MFA
+Alternatively create a `sharepoint` object which you can use to download
 
-If using multi-factor authentication then the above approach won't work. You need to generate an app password and enter this when prompted for your password. See [microsoft docs](https://docs.microsoft.com/en-gb/azure/active-directory/user-help/multi-factor-authentication-end-user-app-passwords) for details on how to generate an app password.
+```
+sp <- spud::sharepoint$new(site_url = "site_url")
+sp$download("path/to/source", "destination.txt")
+```
+
+### Using `sharepoint_folder` object
+
+Create a handle on a sharepoint folder which you can use for creating subfolders, list files, uploading files, download files or deleting items.
+
+```
+sp <- spud::sharepoint$new(site_url = "site_url")
+folder <- sp$folder("path/to/folder")
+```
+
+#### Create folder
+
+```
+sub_folder <- folder$create("folder_name")
+```
+
+#### List files
+
+```
+folder$list()    # List all
+folder$files()   # List only files
+folder$folders() # List only folders
+```
+
+#### Download file
+
+```
+folder$download("path/to/file", "destination.txt")
+```
+
+#### Upload file
+
+```
+folder$upload("path/to/file", "sharepoint/destination")
+```
+
+#### Delete items
+
+```
+folder$delete("path/to/file")
+```
 
 ## Tests
 
-Most of the tests make heavy use of mocks, so if the API changes we might not catch breaking changes. In order to hedge against this we run a small number of integration tests against sharepoint. To opt into running these tests you need to define some environment variables:
+Most of the tests make heavy use of mocks, so if the API changes we might not catch breaking changes. In order to hedge against this we run a small number of manual tests against sharepoint. To opt into running these tests you need to define some environment variables:
 
 ```
-SPUD_TEST_SHAREPOINT_USERNAME=you@example.com
-SPUD_TEST_SHAREPOINT_PASSWORD=s3cret!
-SPUD_TEST_SHAREPOINT_HOST=https://example.sharepoint.com
-SPUD_TEST_SHAREPOINT_SITE=yoursite
-SPUD_TEST_SHAREPOINT_ROOT=path/on/your/site
+SHAREPOINT_SITE_URL=http://example.com
+SHAREPOINT_TENANT=tenant
+SHAREPOINT_APP_ID=123-345
 ```
 
-This will create a new directory on your sharepoint site below the path given at `SPUD_TEST_SHAREPOINT_ROOT`, one per time the test suite is run, and it will add, list, remove files that are there.
+Alternative to `SHAREPOINT_SITE_URL` you can set `SHAREPOINT_SITE_ID` or `SHAREPOINT_SITE_NAME`. One and only one of these values must be set. `SHAREPOINT_TENANT` should be the name of your Azure Active Directory (AAD) tenant. And `SHAREPOINT_APP_ID` should be set to the custom app registration ID for the Microsoft365R app. This will default to using Microsoft365R's own internal app ID.
+
+This will create a new directory on your sharepoint site, one per time the test suite is run, and it will add, list, remove files that are there. The tests will cleanup if they run successfully.
 
 ## License
 

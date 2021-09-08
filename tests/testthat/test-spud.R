@@ -1,120 +1,75 @@
 context("spud")
 
-test_that("sharepoint_download saves data to disk", {
-  ## Mock out authentication steps
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  mock_post <- mockery::mock(security_token_res, cookies_res)
+
+test_that("sharepoint passes args to sharepoint folder", {
+  mock_download <- mockery::mock(NULL)
+  mock_folder <- mockery::mock(NULL)
+  mock_sharepoint_folder <- mockery::mock(list(
+    download = mock_download,
+    folder = mock_folder
+  ))
+
+  with_mock("spud::sharepoint_folder_new" = mock_sharepoint_folder, {
+    sp <- sharepoint$new(site_name = "site")
+  })
+
+  mockery::expect_called(mock_sharepoint_folder, 1)
+  args <- mockery::mock_args(mock_sharepoint_folder)[[1]]
+  expect_equal(args[[1]]$site_name, "site")
 
   t <- tempfile()
-  withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post, {
-      download <- sharepoint_download("https://httpbin.org", "/json", t)
-    })
-  )
+  download <- sp$download("path/to/file", t)
+
+  mockery::expect_called(mock_download, 1)
+  args <- mockery::mock_args(mock_download)[[1]]
+  expect_equal(args, list("path/to/file", t, FALSE))
+
+  folder <- sp$folder("path")
+
+  mockery::expect_called(mock_folder, 1)
+  args <- mockery::mock_args(mock_folder)[[1]]
+  expect_equal(args, list("path"))
+})
+
+
+test_that("sharepoint_download saves data to disk", {
+  t <- tempfile()
+
+  mock_download <- mockery::mock(t)
+  mock_sharepoint_new <- mockery::mock(list(
+      download = mock_download
+  ))
+  with_mock("spud::sharepoint_new" = mock_sharepoint_new, {
+    download <- sharepoint_download(sharepoint_path = "/json", dest = t,
+                                    site_name = "site")
+  })
 
   expect_equal(download, t)
-  ## Data has been successfully downloaded
-  expect_true(file.exists(t))
-  expect_true(file.size(t) > 0)
-  expect_equal(readLines(t)[[1]], "{")
+  mockery::expect_called(mock_sharepoint_new, 1)
+  sharepoint_args <- mockery::mock_args(mock_sharepoint_new)[[1]]
+  expect_equal(sharepoint_args, list(
+    site_name = "site",
+    site_url = NULL,
+    site_id = NULL,
+    tenant = NULL,
+    app = NULL,
+    scopes = NULL,
+    auth = NULL
+  ))
+
+  mockery::expect_called(mock_download, 1)
+  download_args <- mockery::mock_args(mock_download)[[1]]
+  expect_equal(download_args, list(
+    "/json",
+    t,
+    FALSE
+  ))
 })
 
-test_that("download encodes URL", {
-  ## Mock out authentication steps
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  mock_post <- mockery::mock(security_token_res, cookies_res)
 
-  mock_get <- mockery::mock(mock_response())
-
-  t <- tempfile()
-  withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post,
-              "httr::GET" = mock_get, {
-      download <- sharepoint_download("https://httpbin.org",
-                                      "anything/any thing", t)
-    })
-  )
-
-  mockery::expect_called(mock_get, 1)
-  expect_equal(mockery::mock_args(mock_get)[[1]][[1]],
-               "https://httpbin.org/anything/any%20thing")
-})
-
-test_that("httr download can print verbose output", {
-  ## Mock out authentication steps
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  mock_post <- mockery::mock(security_token_res, cookies_res)
-
-  mock_get <- mockery::mock(mock_response())
-
-  t <- tempfile()
-  withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post,
-              "httr::GET" = mock_get, {
-                download <- sharepoint_download("https://httpbin.org",
-                                                "anything/any thing", t, TRUE)
-              })
-  )
-
-  mockery::expect_called(mock_get, 1)
-  expect_equal(mockery::mock_args(mock_get)[[1]][[1]],
-               "https://httpbin.org/anything/any%20thing")
-  expect_equal(mockery::mock_args(mock_get)[[1]][[2]],
-               httr::progress())
-})
-
-test_that("sharepoint_download errors on 404", {
-  ## Mock out authentication steps
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  mock_post <- mockery::mock(security_token_res, cookies_res)
-
-  t <- tempfile()
-  withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post, {
-      expect_error(
-        sharepoint_download("https://httpbin.org", "/status/404", t),
-        "Remote file not found at '/status/404'")
-    })
-  )
-
-  expect_false(file.exists(t))
-})
-
-test_that("sharepoint_download default dest inherits file extension", {
-
-  ## Mock out authentication steps
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  mock_post <- mockery::mock(security_token_res, cookies_res)
-
-  withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post, {
-      download_noext <- sharepoint_download("https://httpbin.org", "/anything/file_noext")
-    })
-    )
-
-  expect_equal(tools::file_ext(download_noext), "" )
-
-  ## Mock out authentication steps
-  security_token_res <- readRDS("mocks/security_token_response.rds")
-  cookies_res <- readRDS("mocks/cookies_response.rds")
-  mock_post <- mockery::mock(security_token_res, cookies_res)
-
-  withr::with_envvar(
-    c("SHAREPOINT_USERNAME" = "user", "SHAREPOINT_PASS" = "pass"),
-    with_mock("httr::POST" = mock_post, {
-      download_ext <- sharepoint_download("https://httpbin.org", "/anything/file.ext")
-    })
-    )
-
-  expect_equal(tools::file_ext(download_ext), "ext")
+test_that("sharepoint_new creates new sharepoint", {
+  with_mock("Microsoft365R::get_sharepoint_site" = mock_get_sharepoint_site, {
+    sp <- sharepoint_new(site_name = "site")
+  })
+  expect_is(sp, "sharepoint")
 })

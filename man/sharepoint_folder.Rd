@@ -11,9 +11,10 @@ Interact with sharepoint folders and their files.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{site}}{Name of the sharepoint site (readonly)}
-
 \item{\code{path}}{Path of the folder (readonly)}
+
+\item{\code{drive}}{A \code{\link[Microsoft365R:ms_drive]{Microsoft365R::ms_drive()}} object representing the
+sharepoint drive.}
 }
 \if{html}{\out{</div>}}
 }
@@ -39,24 +40,16 @@ Interact with sharepoint folders and their files.
 Create sharepoint_folder object to enable listing, creating
 downloading and uploading files & folders
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$new(client, site, path, verify = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$new(auth, path = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{client}}{A low-level sharepoint client object, which can be used to
-interact directly with the sharepoint API.}
+\item{\code{auth}}{Auth info passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}
+contains site_name, site_url, site_id, tenant, app and scopes.}
 
-\item{\code{site}}{The name of the sharepoint site (most likely a short string)}
-
-\item{\code{path}}{Relative path within that shared site.  It seems
-that "Shared Documents" is a common path that most likely
-represents a "Documents" collection when viewed in the
-sharepoint web interface.}
-
-\item{\code{verify}}{Logical, indicating if the site/path combination is
-valid (slower but safer).}
+\item{\code{path}}{Relative path within that shared site.}
 }
 \if{html}{\out{</div>}}
 }
@@ -67,7 +60,7 @@ valid (slower but safer).}
 \subsection{Method \code{files()}}{
 List all files within the folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$files(path = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$files(path = "/")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -84,7 +77,7 @@ List all files within the folder
 \subsection{Method \code{folders()}}{
 List all folders within the folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$folders(path = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$folders(path = "/")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -102,7 +95,7 @@ List all folders within the folder
 List all folders and files within the folder; this is a
 convenience wrapper around the \code{files} and \code{folders} methods.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$list(path = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$list(path = "/")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -117,14 +110,13 @@ convenience wrapper around the \code{files} and \code{folders} methods.
 \if{html}{\out{<a id="method-delete"></a>}}
 \if{latex}{\out{\hypertarget{method-delete}{}}}
 \subsection{Method \code{delete()}}{
-Delete a folder. Be extremely careful as you could
-use this to delete an entire sharepoint. Deleted files are sent
+Delete a folder or file. Be extremely careful as you
+could use this to delete an entire sharepoint. Deleted files are sent
 to the recycle bin, so can be restored with relative ease, but
 it will still be alarming. There is a mechanism to prevent
-accidental deletion by declaring a file that exists within the
-folder.
+accidental deletion.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$delete(path, check)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$delete(path, check = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -133,10 +125,7 @@ folder.
 \item{\code{path}}{The path to delete. Use \code{NULL} to delete the current
 folder.}
 
-\item{\code{check}}{A file (not folder) that exists directly within
-\code{path}, used as a method to verify that you really do want
-to delete this folder (to prevent things like accidental deletion
-of the entire sharepoint, for example).}
+\item{\code{check}}{If TRUE then prompts user for confirmation before deleting}
 }
 \if{html}{\out{</div>}}
 }
@@ -145,18 +134,12 @@ of the entire sharepoint, for example).}
 \if{html}{\out{<a id="method-parent"></a>}}
 \if{latex}{\out{\hypertarget{method-parent}{}}}
 \subsection{Method \code{parent()}}{
-Create an object referring to the parent folder
+Create an object referring to the parent folder. If this
+folder is the root, retrieving parent just returns the root again.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$parent(verify = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$parent()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{verify}}{Verify that the folder exists (which it must really here)}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-folder"></a>}}
@@ -164,15 +147,13 @@ Create an object referring to the parent folder
 \subsection{Method \code{folder()}}{
 Create an object referring to a child folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$folder(path, verify = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$folder(path)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{path}}{The name of the folder, relative to this folder}
-
-\item{\code{verify}}{Verify that the folder exists (which it must really here)}
 }
 \if{html}{\out{</div>}}
 }
@@ -200,25 +181,18 @@ Create a folder on sharepoint
 \subsection{Method \code{download()}}{
 Download a file from a folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$download(
-  path,
-  dest = NULL,
-  progress = FALSE,
-  overwrite = FALSE
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$download(path, dest = NULL, overwrite = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{The name of the path to download, relative to this folder}
+\item{\code{path}}{The path of the file to download, relative to this folder}
 
 \item{\code{dest}}{Path to save downloaded data to. If \code{NULL} then a
 temporary file with the same file extension as \code{path} is used.
 If code{raw()} (or any other raw value) then the raw bytes will be
 returned.}
-
-\item{\code{progress}}{Display httr's progress bar?}
 
 \item{\code{overwrite}}{Overwrite the file if it exists?}
 }
@@ -231,7 +205,7 @@ returned.}
 \subsection{Method \code{upload()}}{
 Upload a file into a folder
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$upload(path, dest = NULL, progress = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{sharepoint_folder$upload(path, dest = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -241,9 +215,7 @@ Upload a file into a folder
 R's working directory.}
 
 \item{\code{dest}}{Remote path save downloaded data to, relative to this
-folder.  If \code{NULL} then the basename of the file is used.}
-
-\item{\code{progress}}{Display httr's progress bar?}
+folder.  If \code{NULL} then uploaded to active folder.}
 }
 \if{html}{\out{</div>}}
 }

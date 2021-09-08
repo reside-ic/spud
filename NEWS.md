@@ -1,3 +1,7 @@
+# spud 0.2.0
+
+* Use `Microsoft365R` to interact with sharepoint (mrc-2596)
+
 # spud 0.1.7
 
 * Folders now expose a public readonly field `site` and `path` (reside-200)

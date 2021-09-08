@@ -1,34 +1,66 @@
 #' Download a dataset from sharepoint
 #'
-#' @param sharepoint_url The base URL of sharepoint e.g.
-#' https://imperiallondon.sharepoint.com
 #' @param sharepoint_path The path to the dataset you want to download - this
-#' should include any subsites in the url and should be of the form
-#' sites/nested/subsites/docs/path/to/document
-#' e.g. if you want to get the file at Data/shape files/example.geojson from
-#' the site groupA which is in site facultyA the full path would be
-#' sites/facultyA/groupA/docs/Data/shape files/example.geojson
-#' You should be able to get this if you locate the data you want to download
-#' in a browser and click menu on the RHS of the file name which appears on
-#' hover -> Copy link and manually edit to get the file path. See vignette for
-#' more details.
+#' should be the path to file relative to the docs root. You can get this
+#' path from the breadcrumb. If it reads "Documents > Data > Example" your
+#' path will be `Data/Example/<file_name>`. You can also get this from
+#' the file download link in sharepoint. If you locate the data you want to
+#' download in a browser and click menu on the RHS of the file name which
+#' appears on hover -> Copy link. The link will contain the path to the file.
 #'
 #' @param dest Path to location you want to save the data. The default
 #' save location is a tempfile with the same file extension as the downloaded
 #' file.
 #'
-#' @param progress If \code{TRUE} then HTTP requests will print a progress bar
-#'
 #' @param overwrite if \code{TRUE} then the \code{dest} will be
 #'   ovewritten if it exists (otherwise it an error will be thrown)
+#'
+#' @param site_name The name of the sharepoint site passed to
+#'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+#'   `SHAREPOINT_SITE_NAME`.
+#'
+#' @param site_url The url of the sharepoint site passed to
+#'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+#'   `SHAREPOINT_SITE_URL`.
+#'
+#' @param site_id The ID of the sharepoint site passed to
+#'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+#'   `SHAREPOINT_SITE_ID`.
+#'
+#' @param tenant The name of the Azure Active Directory tenant
+#'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+#'   env var `SHAREPOINT_SITE_TENANT`.
+#'
+#' @param app A custom app registration ID to use for authentication
+#'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+#'   env var `SHAREPOINT_SITE_APP_ID`.
+#'
+#' @param scopes Microsoft graph scopes to obtain passed to
+#'   [Microsoft365R::get_sharepoint_site()]
 #'
 #' @return Path to downloaded data
 #'
 #' @export
-sharepoint_download <- function(sharepoint_url, sharepoint_path, dest = NULL,
-                                progress = FALSE, overwrite = FALSE) {
-  sp <- sharepoint$new(sharepoint_url)
-  sp$download(sharepoint_path, dest, progress, overwrite)
+sharepoint_download <- function(
+  sharepoint_path, dest = NULL, overwrite = FALSE,
+  site_name = NULL, site_url = NULL, site_id = NULL,
+  tenant = NULL, app = NULL, scopes = NULL) {
+
+  sp <- sharepoint_new(site_name = site_name,
+                       site_url = site_url,
+                       site_id = site_id,
+                       tenant = tenant,
+                       app = app,
+                       scopes = scopes,
+                       auth = NULL)
+  sp$download(sharepoint_path, dest, overwrite)
+}
+
+sharepoint_new <- function(
+  site_name = NULL, site_url = NULL, site_id = NULL, tenant = NULL,
+  app = NULL, scopes = NULL, auth = NULL) {
+
+  sharepoint$new(site_name, site_url, site_id, tenant, app, scopes, auth)
 }
 
 #' Create sharepoint connection for downloading data.
@@ -40,49 +72,61 @@ sharepoint <- R6::R6Class(
 
   public = list(
     #' @field client
-    #' A low-level sharepoint client object, which can be used to interact
-    #' directly with the sharepoint API.  This object mostly handles
-    #' authentication, etc.
+    #' A sharepoint_folder object
     client = NULL,
 
     #' @description
-    #' Create sharepoint object for downloading data from sharepoint
-    #' @param sharepoint_url Root URL of sharepoint site to download from
-    #' @param auth Authentication data passed to the client
+    #' Create sharepoint object for downloading data from sharepoint. If
+    #'  `auth` object provided any individual auth args will be used to
+    #'   override those on the `auth` object.
+    #' @param auth `sharepoint_auth` object containing authentication data
+    #'   passed to the client.
+    #' @param site_name The name of the sharepoint site passed to
+    #'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+    #'   `SHAREPOINT_SITE_NAME`.
+    #' @param site_url The url of the sharepoint site passed to
+    #'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+    #'   `SHAREPOINT_SITE_URL`.
+    #' @param site_id The ID of the sharepoint site passed to
+    #'   [Microsoft365R::get_sharepoint_site()]. If `NULL` will use env var
+    #'   `SHAREPOINT_SITE_ID`.
+    #' @param tenant The name of the Azure Active Directory tenant
+    #'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+    #'   env var `SHAREPOINT_SITE_TENANT`.
+    #' @param app A custom app registration ID to use for authentication
+    #'   passed to [Microsoft365R::get_sharepoint_site()]. If `NULL` will use
+    #'   env var `SHAREPOINT_SITE_APP_ID`.
+    #' @param scopes Microsoft graph scopes to obtain passed to
+    #'   [Microsoft365R::get_sharepoint_site()].
     #' @return A new `sharepoint` object
-    initialize = function(sharepoint_url, auth = NULL) {
-      self$client <- sharepoint_client$new(sharepoint_url, auth)
+    initialize = function(
+      site_name = NULL, site_url = NULL, site_id = NULL,
+      tenant = NULL, app = NULL, scopes = NULL, auth = NULL) {
+
+      auth <- sharepoint_auth(site_name, site_url, site_id, tenant, app,
+                              scopes, auth)
+      self$client <- sharepoint_folder_new(auth)
     },
 
     #' @description
     #' Download data from sharepoint
     #' @param sharepoint_path Path to the resource within sharepoint
     #' @param dest Path to save downloaded data to
-    #' @param progress Display a progress bar during download?
     #' @param overwrite Overwrite existing files?
     #' @return Path to saved data
-    download = function(sharepoint_path, dest = NULL, progress = FALSE,
-                        overwrite = FALSE) {
-      download(self$client, URLencode(sharepoint_path), dest,
-               sharepoint_path, progress, overwrite)
+    download = function(sharepoint_path, dest = NULL, overwrite = FALSE) {
+      self$client$download(sharepoint_path, dest, overwrite)
     },
 
     #' @description
-    #' Create a \code{folder} object representing a sharepoint folder,
-    #' with which one can list, download and upload files.  See
+    #' Create a \code{sharepoint_folder} object representing a sharepoint
+    #' folder, with which one can list, download and upload files.  See
     #' \code{\link{sharepoint_folder}} for more details.
     #'
-    #' @param site The name of the sharepoint site (most likely a short string)
-    #'
-    #' @param path Relative path within that shared site.  It seems
-    #' that "Shared Documents" is a common path that most likely
-    #' represents a "Documents" collection when viewed in the
-    #' sharepoint web interface.
-    #'
-    #' @param verify Logical, indicating if the site/path combination is
-    #' valid (slower but safer).
-    folder = function(site, path, verify = FALSE) {
-      sharepoint_folder$new(self$client, site, path, verify)
+    #' @param path Path to folder from root of sharepoint site. Defaults to
+    #' "/" for the root.
+    folder = function(path = "/") {
+      self$client$folder(path)
     }
   )
 )

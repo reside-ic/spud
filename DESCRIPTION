@@ -1,6 +1,6 @@
 Package: spud
 Title: Sharepoint upload & download
-Version: 0.1.7
+Version: 0.2.0
 Authors@R: c(person("Robert", "Ashton", role = c("aut", "cre"),
                     email = "r.ashton@imperial.ac.uk"),
              person("Rich", "FitzJohn", role = "aut"),
@@ -14,14 +14,11 @@ LazyData: true
 Suggests: 
     mockery,
     testthat,
-    tibble (>= 3.0.0),
     withr
 Imports: 
-    getPass,
-    glue,
-    httr,
-    jsonlite,
+    Microsoft365R,
     tools,
-    xml2
+Remotes:
+    Azure/Microsoft365R
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

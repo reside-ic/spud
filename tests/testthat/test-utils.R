@@ -8,19 +8,6 @@ test_that("null-or-value works", {
 })
 
 
-test_that("clean input text", {
-  expect_equal(clean_input_text('"foo"'), "foo") # strip quotes
-  expect_equal(clean_input_text('  foo'), "foo") # strip leading whitespace
-  expect_equal(clean_input_text('foo  '), "foo") # strip trailing whitespace
-  expect_equal(clean_input_text(' foo '), "foo") # strip all whitespace
-  expect_equal(clean_input_text(' "foo" '), "foo") # strip all whitespace/quotes
-  expect_equal(clean_input_text(" 'foo' "), "foo") # strip all whitespace/quotes
-  ## But allow use of quotes to preserve whitespace
-  expect_equal(clean_input_text(' " foo " '), " foo ")
-  expect_equal(clean_input_text(" ' foo ' "), " foo ")
-  expect_equal(clean_input_text("f oo"), "f oo")
-})
-
 test_that("asserts", {
   expect_error(assert_scalar_character(c("one", "two"), "test"),
                "'test' must be a scalar")
@@ -31,6 +18,7 @@ test_that("asserts", {
   expect_error(assert_scalar_character("", "test"),
                "'test' must be nonempty")
 })
+
 
 test_that("tempfile_inherit_ext", {
 
@@ -55,45 +43,10 @@ test_that("download filename validation", {
                "'dest' must not be NA")
 })
 
-
-test_that("Can download raw data", {
-  client <- mock_download_client()
-  res <- download(client, "/gzip", raw(), "my.zip", FALSE, FALSE)
-  expect_is(res, "raw")
-})
-
-
-test_that("Can create a helpful temp name", {
-  client <- mock_download_client()
-  res <- download(client, "/gzip", NULL, "my.zip", FALSE, FALSE)
-  expect_is(res, "character")
-  expect_true(file.exists(res))
-  expect_match(res, "\\.zip$")
-})
-
-
-test_that("Can overwrite", {
-  client <- mock_download_client()
-  dest <- tempfile()
-  file.create(dest)
-  res <- download(client, "/gzip", dest, "my.zip", FALSE, TRUE)
-  expect_true(file.size(dest) > 0)
-  expect_error(
-    download(client, "/gzip", dest, "my.zip", FALSE, FALSE))
-})
-
-
-test_that("Don't write file on 404", {
-  client <- mock_download_client()
-  dest <- tempfile()
-  expect_error(
-    download(client, "/status/404", dest, "my.zip", FALSE, FALSE),
-    "Remote file not found at 'my.zip'")
-  expect_false(file.exists(dest))
-})
-
-
-test_that("file_path2", {
-  expect_equal(file_path2("a/b", NULL), "a/b")
-  expect_equal(file_path2("a/b", "c"), "a/b/c")
+test_that("can get system env", {
+  expect_null(sys_getenv("ENV_VAR"))
+  expect_equal(sys_getenv("ENV_VAR", unset = ""), "")
+  withr::with_envvar(
+    c("ENV_VAR" = "123"),
+    expect_equal(sys_getenv("ENV_VAR"), "123"))
 })
