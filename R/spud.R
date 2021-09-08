@@ -59,8 +59,10 @@ sharepoint_download <- function(
   sp$download(sharepoint_path, dest, overwrite)
 }
 
-sharepoint_new <- function(site_name, site_url, site_id, tenant, app, scopes,
-                           auth) {
+sharepoint_new <- function(
+  site_name = NULL, site_url = NULL, site_id = NULL, tenant = NULL,
+  app = NULL, scopes = NULL, auth = NULL) {
+
   sharepoint$new(site_name, site_url, site_id, tenant, app, scopes, auth)
 }
 

@@ -37,9 +37,6 @@ sharepoint_folder <- R6::R6Class(
     #' @description List all files within the folder
     #' @param path Folder relative to this folder, uses this folder if NULL
     files = function(path = "/") {
-      if (is.null(path)) {
-        path <- "/"
-      }
       items <- self$list(path)
       items[!items$isdir, ]
     },
@@ -47,9 +44,6 @@ sharepoint_folder <- R6::R6Class(
     #' @description List all folders within the folder
     #' @param path Folder relative to this folder, uses this folder if NULL
     folders = function(path = "/") {
-      if (is.null(path)) {
-        path <- "/"
-      }
       items <- self$list(path)
       items[items$isdir, ]
     },

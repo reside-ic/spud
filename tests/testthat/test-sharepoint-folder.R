@@ -48,6 +48,19 @@ test_that("list everything", {
 })
 
 
+test_that("list defaults to root if path is NULL ", {
+  folder <- test_folder()
+  expect_is(folder, "sharepoint_folder")
+
+  dat <- folder$list(path = NULL)
+
+  mockery::expect_called(folder$drive$list_items, 1)
+  expect_equal(
+    mockery::mock_args(folder$drive$list_items)[[1]],
+    list("/", info = "all"))
+})
+
+
 test_that("get child & parent directories", {
   testthat::skip_on_os("windows")
   folder <- test_folder()
@@ -157,4 +170,13 @@ test_that("delete folder", {
   mockery::expect_called(item$delete, 1)
   expect_equal(mockery::mock_args(item$delete)[[1]],
                list(confirm = TRUE))
+})
+
+
+test_that("sharepoint_folder_new creates new sharepoint_folder", {
+  with_mock("Microsoft365R::get_sharepoint_site" = mock_get_sharepoint_site, {
+    auth <- sharepoint_auth()
+    folder <- sharepoint_folder_new(auth)
+  })
+  expect_is(folder, "sharepoint_folder")
 })

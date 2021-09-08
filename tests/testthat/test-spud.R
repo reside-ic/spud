@@ -1,5 +1,6 @@
 context("spud")
 
+
 test_that("sharepoint passes args to sharepoint folder", {
   mock_download <- mockery::mock(NULL)
   mock_folder <- mockery::mock(NULL)
@@ -29,6 +30,7 @@ test_that("sharepoint passes args to sharepoint folder", {
   args <- mockery::mock_args(mock_folder)[[1]]
   expect_equal(args, list("path"))
 })
+
 
 test_that("sharepoint_download saves data to disk", {
   t <- tempfile()
@@ -64,3 +66,10 @@ test_that("sharepoint_download saves data to disk", {
   ))
 })
 
+
+test_that("sharepoint_new creates new sharepoint", {
+  with_mock("Microsoft365R::get_sharepoint_site" = mock_get_sharepoint_site, {
+    sp <- sharepoint_new(site_name = "site")
+  })
+  expect_is(sp, "sharepoint")
+})

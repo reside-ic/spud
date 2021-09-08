@@ -39,3 +39,7 @@ with_emptyenv <- function(code) {
     "SHAREPOINT_APP_ID" = NULL
   ), code)
 }
+
+expect_no_error <- function(object) {
+  expect_error(object, NA)
+}

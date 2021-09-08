@@ -62,3 +62,10 @@ test_that("auth object can be created from existing object", {
   expect_equal(auth$scopes, c("Group.ReadWrite.All", "Directory.Read.All",
                               "Sites.Manage.All"))
 })
+
+test_that("can check object is sharepoint_auth object", {
+  expect_error(assert_sharepoint_auth("test"),
+               "Must be a sharepoint_auth object")
+  auth <- sharepoint_auth()
+  expect_no_error(assert_sharepoint_auth(auth))
+})
