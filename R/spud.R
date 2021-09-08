@@ -1,15 +1,12 @@
 #' Download a dataset from sharepoint
 #'
 #' @param sharepoint_path The path to the dataset you want to download - this
-#' should include any subsites in the url and should be of the form
-#' sites/nested/subsites/docs/path/to/document
-#' e.g. if you want to get the file at Data/shape files/example.geojson from
-#' the site groupA which is in site facultyA the full path would be
-#' sites/facultyA/groupA/docs/Data/shape files/example.geojson
-#' You should be able to get this if you locate the data you want to download
-#' in a browser and click menu on the RHS of the file name which appears on
-#' hover -> Copy link and manually edit to get the file path. See vignette for
-#' more details.
+#' should be the path to file relative to the docs root. You can get this
+#' path from the breadcrumb. If it reads "Documents > Data > Example" your
+#' path will be `Data/Example/<file_name>`. You can also get this from
+#' the file download link in sharepoint. If you locate the data you want to
+#' download in a browser and click menu on the RHS of the file name which
+#' appears on hover -> Copy link. The link will contain the path to the file.
 #'
 #' @param dest Path to location you want to save the data. The default
 #' save location is a tempfile with the same file extension as the downloaded

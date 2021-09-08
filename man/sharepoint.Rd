@@ -46,19 +46,24 @@ override those on the \code{auth} object.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{site_name}}{The name of the sharepoint site passed to
-\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}. If \code{NULL} will use env var
+\code{SHAREPOINT_SITE_NAME}.}
 
 \item{\code{site_url}}{The url of the sharepoint site passed to
-\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}. If \code{NULL} will use env var
+\code{SHAREPOINT_SITE_URL}.}
 
 \item{\code{site_id}}{The ID of the sharepoint site passed to
-\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}}
+\code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}. If \code{NULL} will use env var
+\code{SHAREPOINT_SITE_ID}.}
 
 \item{\code{tenant}}{The name of the Azure Active Directory tenant
-passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}.}
+passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}. If \code{NULL} will use
+env var \code{SHAREPOINT_SITE_TENANT}.}
 
 \item{\code{app}}{A custom app registration ID to use for authentication
-passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}.}
+passed to \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}. If \code{NULL} will use
+env var \code{SHAREPOINT_SITE_APP_ID}.}
 
 \item{\code{scopes}}{Microsoft graph scopes to obtain passed to
 \code{\link[Microsoft365R:client]{Microsoft365R::get_sharepoint_site()}}.}
